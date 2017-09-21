@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+     android:id="@+id/coordinator"
+    android:layout_height="match_parent"
+    tools:context="com.example.andrea.posizione.MainActivity">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:map="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/map"
+              android:layout_below="@+id/btn_invia_posizione"
+              android:name="com.google.android.gms.maps.SupportMapFragment"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              tools:context="com.example.andrea.posizione.MainActivity"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_dodgeInsetEdges="bottom">
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:id="@+id/btn_send_marker_location"
+            android:src="@drawable/ic_send_white_48px"
+            app:backgroundTint="@color/colorPrimary"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:id="@+id/btn_send_location"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_location_on_black_48px"
+            app:backgroundTint="@color/colorPrimary"/>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

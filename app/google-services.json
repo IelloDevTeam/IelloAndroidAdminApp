@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "547096972873",
+    "firebase_url": "https://piattaforme-ca3e9.firebaseio.com",
+    "project_id": "piattaforme-ca3e9",
+    "storage_bucket": "piattaforme-ca3e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547096972873:android:d00be0e3df464b59",
+        "android_client_info": {
+          "package_name": "com.example.andrea.posizione"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547096972873-or78b4sn3sp5k0a2s9mgqgqp5tmirokk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.andrea.posizione",
+            "certificate_hash": "522086615d39cc515cbebfc81d232062354a1d35"
+          }
+        },
+        {
+          "client_id": "547096972873-8brjjj41echqsfppp2kf5jhp0huaatoi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9XDbUzEEFOO4CzZOEjfoCBmgQJ7GpjMQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547096972873-8brjjj41echqsfppp2kf5jhp0huaatoi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
