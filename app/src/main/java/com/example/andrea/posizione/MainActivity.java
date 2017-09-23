@@ -14,13 +14,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.andrea.posizione.model.Segnalazione;
+import com.example.andrea.posizione.model.Posto;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
     private FloatingActionButton _sendLocation,
                                 _sendMarker;
-    private static final String TAG_SEGNALAZIONI = "segnalazioni";
+    private static final String TAG_POSTI = "posti";
     private static final int PERMISSION_CODE = 100;
     private GoogleMap _map;
     private boolean _locationPermission;
@@ -164,13 +163,13 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         if (location != null) {
 
             if (_firebaseAuth.getCurrentUser() != null) {
-                Segnalazione segnalazione = new Segnalazione(_firebaseAuth.getCurrentUser().getUid(),
+                Posto posto = new Posto(
                         location.latitude,
                         location.longitude);
 
-                _database.getReference("/" + TAG_SEGNALAZIONI)
+                _database.getReference("/" + TAG_POSTI)
                         .push()
-                        .setValue(segnalazione);
+                        .setValue(posto);
 
                 Toast.makeText(MainActivity.this,
                         location.latitude + " \n" + location.longitude,
