@@ -10,6 +10,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resValue "string", "google_maps_key", (project.findProperty("GOOGLE_MAPS_API_KEY") ?: "")
+        vectorDrawables.useSupportLibrary = true
+        resValue "string", "google_geoc_key", (project.findProperty("GOOGLE_GEOCODING_API_KEY") ?: "")
     }
     buildTypes {
         release {
@@ -26,11 +29,14 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:support-vector-drawable:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.firebase:firebase-database:11.4.0'
     compile 'com.google.android.gms:play-services-location:11.4.0'
     compile 'com.google.firebase:firebase-auth:11.4.0'
     compile 'com.google.android.gms:play-services-maps:11.4.0'
+    compile 'io.github.yavski:fab-speed-dial:1.0.6'
+    compile 'com.android.volley:volley:1.0.0'
     testCompile 'junit:junit:4.12'
 }
 
