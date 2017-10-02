@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">Iello Admin App</string>
-    <string name="title_activity_maps">Map</string>
+
+    <string name="help">Iello Admin App è l\'applicazione Android che consente di popolare il
+        databese Firebase di Project Iello, dove vengono memorizzati i posteggi per disabili
+        utilizzati da Iello API e Iello App Android.\n\nQuest\'app è pensata per essere utilizzata
+        esclusivamente dagli sviluppatori o da eventuali addetti al popolamento del database.\n\nLa
+        mappa può essere spostata digitando un indirizzo qualunque sulla barra di ricerca, o
+        utilizzando il button in alto a destra sulla mappa, per centrare la posizione sulla
+        posizione corrente dell\'utente.\n\nIl Fab in basso a destra consente di inviare una posizione
+        al database; in particolare, consente di inviare la propria posizione attuale, o una
+        posizione selezionata sulla mappa, a discrezione dell\'utilizzatore.\n\nPer poter centrare
+        la mappa sulla propria posizione, o inviare la propria posizione, è necessario attivare la
+        geolocalizzazione sul proprio dispositivo.\n\nPer poter inviare dati al database, è necessario
+        disporre di una connessione internet, e attendere che l\'app stabilisca una connessione con
+        il database.\n\nPer comodità di utilizzo, l\'app mantiene lo schermo del dispositivo acceso
+        mentre la si utilizza.
+    </string>
+
 </resources>

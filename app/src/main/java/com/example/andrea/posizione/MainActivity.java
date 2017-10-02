@@ -1,6 +1,8 @@
 package com.example.andrea.posizione;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -10,11 +12,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -312,6 +316,52 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         return false;
     }
 
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // qua vanno gestiti i click sulle voci di menu
+        switch(item.getItemId()) {
+
+            case R.id.action_help:
+                avviaDialogHelp();
+                break;
+
+            default:
+                Log.i("tabbedMain", "errore click voci menu");
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    private void avviaDialogHelp() {
+
+        AlertDialog.Builder alertHelp = new AlertDialog.Builder(this);
+
+        alertHelp.setTitle("Aiuto");
+        alertHelp.setIcon(R.drawable.ic_help_outline_black_24dp);
+        alertHelp.setMessage(getString(R.string.help));
+
+        // button positivo: elimina partita dal singleton e aggiorna lista
+        alertHelp.setPositiveButton("Fantastico!", null);
+
+        AlertDialog alert = alertHelp.create();
+        alert.show();
+
+    }
 
       /*
      * Metodi per accedere alla progressBar, utilizzata come schermata di caricamento durante la
