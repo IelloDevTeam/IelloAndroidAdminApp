@@ -21,6 +21,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- tema della SplashActivity, un'activity senza action bar nella quale viene visualizzato il
+        logo dell'app -->
+    <style name="SplashTheme" parent="NoActionBarTheme">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
+
 
 
 </resources>
