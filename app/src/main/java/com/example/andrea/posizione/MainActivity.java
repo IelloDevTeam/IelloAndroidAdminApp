@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -82,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // mantiene lo schermo acceso durante l'utilizzo dell'app
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // inizializza la mappa
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
