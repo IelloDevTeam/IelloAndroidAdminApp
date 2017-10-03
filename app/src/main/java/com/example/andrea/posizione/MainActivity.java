@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -51,12 +52,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
-public class MainActivity extends AppCompatActivity implements OnSuccessListener<Location>,
+public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback,
-        GoogleMap.OnMapLongClickListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = MainActivity.class.getName();
     private FusedLocationProviderClient _fusedLocationProviderClient;
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     private static final int PERMISSION_CODE = 100;
     private GoogleMap _map;
     private boolean _locationPermission;
-    private Marker _markerLocation;
+    private List<Marker> _markerList = new ArrayList<>();
 
     private FabSpeedDial _multiFabButton;
 
@@ -135,24 +139,53 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
                             {
                                 _fusedLocationProviderClient
                                         .getLastLocation()
-                                        .addOnSuccessListener(MainActivity.this, MainActivity.this);
-                                Snackbar.make(findViewById(R.id.coordinator), "Posizione attuale inviata", Snackbar.LENGTH_LONG).show();
-                            } catch (SecurityException ex)
+                                        .addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
+                                            @Override
+                                            public void onSuccess(Location location) {
+                                                if(location != null) {
+                                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                                    sendLocationToFirebase(latLng);
+
+                                                    Toast.makeText(MainActivity.this, "Posizione inviata:\n" +
+                                                                    "Lat: " + latLng.latitude + "\n" +
+                                                                    "Lng: " + latLng.longitude,
+                                                            Toast.LENGTH_LONG).show();
+
+                                                    Snackbar.make(findViewById(R.id.coordinator), "Posizione attuale inviata", Snackbar.LENGTH_LONG).show();
+
+                                                } else {
+                                                    Toast.makeText(MainActivity.this, "Attiva la geolocalizzazione.",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                                      } catch (SecurityException ex)
                             {
                                 ex.printStackTrace();
+                                Toast.makeText(MainActivity.this, "Errore: " + ex, Toast.LENGTH_LONG).show();
                             }
                         break;
                     }
 
                     case R.id.action_send_marker: {
-                        if(_markerLocation != null)
+                        if(_markerList.size() > 0)
                         {
-                            sendLocationToFirebase(_markerLocation.getPosition());
-                            _markerLocation.remove();
-                            _markerLocation = null;
+                            for(Marker m : _markerList) {
+                                sendLocationToFirebase(m.getPosition());
+                                m.remove();
+                            }
+
+                            _markerList.clear();
+
                             Snackbar.make(findViewById(R.id.coordinator), "Posizione markers inviata", Snackbar.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Nessun marker selezionato.",Toast.LENGTH_SHORT).show();
                         }
                         break;
+                    }
+
+                    case R.id.action_elimina_marker: {
+                        eliminaTuttiMarkers();
                     }
                 }
                 return false;
@@ -244,17 +277,11 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
     }
 
 
-    @Override
-    public void onSuccess(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        sendLocationToFirebase(latLng);
-    }
 
 
     private void sendLocationToFirebase(LatLng location)
     {
         if (location != null) {
-
             if (_firebaseAuth.getCurrentUser() != null) {
                 Posto posto = new Posto(
                         location.latitude,
@@ -264,10 +291,9 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
                         .push()
                         .setValue(posto);
 
-                Toast.makeText(MainActivity.this,
-                        location.latitude + " \n" + location.longitude,
-                        Toast.LENGTH_LONG).show();
             }
+        } else {
+            Toast.makeText(MainActivity.this, "Nessuna posizione selezionata.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -288,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
         _map.getUiSettings().setMyLocationButtonEnabled(true);
         _map.setMinZoomPreference(5);
         _map.setOnMapLongClickListener(this);
+        _map.setOnMapClickListener(this);
         _map.setOnMarkerClickListener(this);
         _map.moveCamera(CameraUpdateFactory.newLatLngZoom(COORD_INIZIALI, 15.0f));
 
@@ -305,14 +332,31 @@ public class MainActivity extends AppCompatActivity implements OnSuccessListener
 
     @Override
     public void onMapLongClick(LatLng latLng) {
+        eliminaTuttiMarkers();
+    }
+
+
+    private void eliminaTuttiMarkers() {
         _map.clear();
-        _map.addMarker(new MarkerOptions().draggable(false).position(latLng));
+        _markerList.clear();
+        Toast.makeText(this, "Tutti i markers eliminati.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        Marker newMarker = _map.addMarker(new MarkerOptions().draggable(false).position(latLng));
+        newMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        _markerList.add(newMarker);
+
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        _markerLocation = marker;
-        _markerLocation.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        //_markerLocation = marker;
+        //_markerLocation.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        //_markerLocation.remove();
+        marker.remove();
+        _markerList.remove(marker);
         return false;
     }
 

@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_elimina_marker"
+        android:icon="@drawable/ic_location_off_white_24dp"
+        android:title="Elimina tutti i marker dalla mappa"/>
+    <item
         android:id="@+id/action_send_location"
         android:icon="@drawable/ic_my_location_white_24px"
         android:title="Invia posizione attuale" />
