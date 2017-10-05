@@ -1,17 +1,7 @@
 package com.example.andrea.posizione;
 
-import android.Manifest;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,236 +17,119 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.andrea.posizione.model.Posto;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
-public class MainActivity extends AppCompatActivity implements
-        OnMapReadyCallback,
-        GoogleMap.OnMapLongClickListener, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
-    private static final String TAG = MainActivity.class.getName();
-    private FusedLocationProviderClient _fusedLocationProviderClient;
-    private FirebaseDatabase _database;
-    private FirebaseAuth _firebaseAuth;
+/**
+ * Created by TeamPiattaforme on 25/09/17
+ * L'activity principale dell'applicazione. Implementa le principali funzioni del programma.
+ */
+public class MainActivity extends AppCompatActivity {
 
-    // riferimento alla progressbar
-    private FrameLayout _progBar;
+    // riferimento a elementi d'interfaccia
+    private FrameLayout mProgressBar;
+    private EditText mEditIndirizzo;
+    private FabSpeedDial mMultiFabButton;
 
-    // riferimento agli altri elementi
-    private EditText _editIndirizzo;
+    // istanza del gestore del collegamento a DB Firebase
+    private FirebaseHandler _firebaseHandler;
 
-
-    private static final String TAG_POSTI = "posti";
-    private static final int PERMISSION_CODE = 100;
-    private GoogleMap _map;
-    private boolean _locationPermission;
-    private List<Marker> _markerList = new ArrayList<>();
-
-    private FabSpeedDial _multiFabButton;
-
-    // coordinate iniziale impostate su urbino di default
-    public static LatLng COORD_INIZIALI = new LatLng(43.7262568, 12.6365634);
+    // istanza del gestore della mappa
+    private MappaGoogle _mappa;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // inizializza vari elementi base dell'interfaccia utente
         setContentView(R.layout.activity_main);
-
-        // mantiene lo schermo acceso durante l'utilizzo dell'app
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        // inizializza la mappa
-        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
-            // actionBar.setDisplayHomeAsUpEnabled(true);
+        if(actionBar != null)
             actionBar.setTitle(R.string.app_name);
-        }
 
-        // inizializza il db firebase
-        _database = FirebaseDatabase.getInstance();
-        _firebaseAuth = FirebaseAuth.getInstance();
+        // mantiene lo schermo acceso durante l'utilizzo dell'app
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // inizializza i servizi di localizzazione google
-        _fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        // inizializza il gestore della mappa
+        _mappa = new MappaGoogle(this);
 
-        // verifica se si dispone dell'autorizzazione alla posizione, ed eventualmente la chiede
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        PERMISSION_CODE);
-            }
-        } else _locationPermission = true;
-
+        // inizializza gestore del collegamento Firebase
+        _firebaseHandler = new FirebaseHandler(this);
 
         // inizializza i fab button
-        _multiFabButton = findViewById(R.id.customFab);
-        _multiFabButton.setMenuListener(new SimpleMenuListenerAdapter() {
+        mMultiFabButton = findViewById(R.id.customFab);
+        mMultiFabButton.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch(menuItem.getItemId()) {
                     case R.id.action_send_location: {
-                        if(_locationPermission)
-                            try
-                            {
-                                _fusedLocationProviderClient
-                                        .getLastLocation()
-                                        .addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>() {
-                                            @Override
-                                            public void onSuccess(Location location) {
-                                                if(location != null) {
-                                                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                                    sendLocationToFirebase(latLng);
-
-                                                    Toast.makeText(MainActivity.this, "Posizione inviata:\n" +
-                                                                    "Lat: " + latLng.latitude + "\n" +
-                                                                    "Lng: " + latLng.longitude,
-                                                            Toast.LENGTH_LONG).show();
-
-                                                    Snackbar.make(findViewById(R.id.coordinator), "Posizione attuale inviata", Snackbar.LENGTH_LONG).show();
-
-                                                } else {
-                                                    Toast.makeText(MainActivity.this, "Attiva la geolocalizzazione.",
-                                                            Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-                                      } catch (SecurityException ex)
-                            {
-                                ex.printStackTrace();
-                                Toast.makeText(MainActivity.this, "Errore: " + ex, Toast.LENGTH_LONG).show();
-                            }
+                        // invio della propria posizione al DB Firebase
+                        _mappa.inviaPosizioneGeolocalizzata();
                         break;
                     }
 
                     case R.id.action_send_marker: {
-                        if(_markerList.size() > 0)
-                        {
-                            for(Marker m : _markerList) {
-                                sendLocationToFirebase(m.getPosition());
-                                m.remove();
-                            }
-
-                            _markerList.clear();
-
-                            Snackbar.make(findViewById(R.id.coordinator), "Posizione markers inviata", Snackbar.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, "Nessun marker selezionato.",Toast.LENGTH_SHORT).show();
-                        }
+                        // invio al DB Firebase dei marker selezionati in mappa
+                        _mappa.inviaPosizioneMarkers();
                         break;
                     }
 
                     case R.id.action_elimina_marker: {
-                        eliminaTuttiMarkers();
+                        // eliminazione di tutti i marker dalla mappa
+                        _mappa.eliminaTuttiMarkers();
                     }
                 }
                 return false;
             }
         });
 
-
-        _firebaseAuth.signInWithEmailAndPassword("piattaforme@gmail.com", "piattaforme101")
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-
-                            Toast.makeText(MainActivity.this, "Connesso al DB Firebase! L'app è pronta a inviare posizioni.",
-                                    Toast.LENGTH_LONG).show();
-
-                            _multiFabButton.show();
-
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Non sei connesso al Database. Non pioi effettuare operazioni.",
-                                    Toast.LENGTH_LONG).show();
-
-                            // nascondi i fab, in quanto senza autenticazione non si può
-                            // intraprendere nessuna azione
-                            _multiFabButton.hide();
-
-                        }
-                        hideProgressBar();
-                    }
-                });
-
-
-        _progBar = findViewById(R.id.clippedProgressBar);
-        _editIndirizzo = findViewById(R.id.editIndirizzo);
+        // inizializzazione vari elementi di interfaccia
+        mProgressBar = findViewById(R.id.clippedProgressBar);
+        mEditIndirizzo = findViewById(R.id.editIndirizzo);
         FloatingActionButton fabSearch = findViewById(R.id.fabSearch);
 
-
-        _editIndirizzo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        // al click sulla lente d'ingrandimento presente sulla tastiera, avvia la ricerca
+        // dell'indirizzo
+        mEditIndirizzo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    AsyncRicercaRapidaIndirizzo rri = new AsyncRicercaRapidaIndirizzo();
-                    rri.execute();
+                    String query = v.getText().toString();
+                    AsyncRicercaIndirizzo searchAddr = new AsyncRicercaIndirizzo(MainActivity.this, query);
+                    searchAddr.execute();
                     return true;
                 }
                 return false;
             }
         });
 
+        // stessa cosa va fatta al click sul fabSearch
         fabSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AsyncRicercaRapidaIndirizzo rri = new AsyncRicercaRapidaIndirizzo();
-                rri.execute();
+                String query = mEditIndirizzo.getText().toString();
+                AsyncRicercaIndirizzo searchAddr = new AsyncRicercaIndirizzo(MainActivity.this, query);
+                searchAddr.execute();
             }
         });
 
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = _firebaseAuth.getCurrentUser();
-        if(currentUser == null) {
-            _multiFabButton.hide();
+        if(_firebaseHandler.getFirebaseUser() == null) {
+            hideFab();
         }
 
     }
@@ -265,101 +138,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_CODE) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                    || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-                _locationPermission = true;
-                if(_map != null)
-                    _map.setMyLocationEnabled(true);
-            }
-        }
+        _mappa.attivaPermessoGeolocalizzazione(requestCode);
     }
-
-
-
-
-    private void sendLocationToFirebase(LatLng location)
-    {
-        if (location != null) {
-            if (_firebaseAuth.getCurrentUser() != null) {
-                Posto posto = new Posto(
-                        location.latitude,
-                        location.longitude);
-
-                _database.getReference("/" + TAG_POSTI)
-                        .push()
-                        .setValue(posto);
-
-            }
-        } else {
-            Toast.makeText(MainActivity.this, "Nessuna posizione selezionata.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        _map = googleMap;
-        _map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        _map.getUiSettings().setMyLocationButtonEnabled(true);
-        _map.setMinZoomPreference(5);
-        _map.setOnMapLongClickListener(this);
-        _map.setOnMapClickListener(this);
-        _map.setOnMarkerClickListener(this);
-        _map.moveCamera(CameraUpdateFactory.newLatLngZoom(COORD_INIZIALI, 15.0f));
-
-        if (_locationPermission)
-        {
-            try{
-                _map.setMyLocationEnabled(true);
-            } catch (SecurityException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-        eliminaTuttiMarkers();
-    }
-
-
-    private void eliminaTuttiMarkers() {
-        _map.clear();
-        _markerList.clear();
-        Toast.makeText(this, "Tutti i markers eliminati.", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        Marker newMarker = _map.addMarker(new MarkerOptions().draggable(false).position(latLng));
-        newMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-        _markerList.add(newMarker);
-
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        //_markerLocation = marker;
-        //_markerLocation.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-        //_markerLocation.remove();
-        marker.remove();
-        _markerList.remove(marker);
-        return false;
-    }
-
 
 
     @Override
@@ -407,71 +187,43 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-      /*
+    /*
      * Metodi per accedere alla progressBar, utilizzata come schermata di caricamento durante la
      * ricerca dei parcheggi.
      */
 
     public void showProgressBar() {
-        _progBar.setVisibility(View.VISIBLE);
+        if (mProgressBar != null)
+            mProgressBar.setVisibility(View.VISIBLE);
     }
 
     public void hideProgressBar() {
-        _progBar.setVisibility(View.GONE);
+        if(mProgressBar != null)
+            mProgressBar.setVisibility(View.GONE);
     }
 
 
-
-    /**
-     * AsyncTask strettamente collegato all'activity, quindi definito qua dentro. Sposta la mappa
-     * a seconda dell'indirizzo selezionato dall'utente.
-     */
-    private class AsyncRicercaRapidaIndirizzo extends AsyncTask<Void, JSONObject, JSONObject> {
-        private String mQuery;
-
-        @Override
-        protected void onPreExecute() {
-            showProgressBar();
-            mQuery = _editIndirizzo.getText().toString();
-        }
-
-        @Override
-        protected JSONObject doInBackground(Void... voids) {
-            String queryFormattata = mQuery.replaceAll(" ", "+" + "");
-            String url = "https://maps.google.com/maps/api/geocode/json" +
-                    "?address=" + queryFormattata + "&key=" + getString(R.string.google_geoc_key);
-
-            return HelperRete.volleySyncRequest(MainActivity.this, url);
-        }
+    public void showFab() {
+        if(mMultiFabButton != null)
+        mMultiFabButton.show();
+    }
 
 
-        @Override
-        protected void onPostExecute(JSONObject response) {
-
-            try {
-                Log.i("jsonresp", response.toString());
-
-                double lng = ((JSONArray) response.get("results")).getJSONObject(0)
-                        .getJSONObject("geometry").getJSONObject("location")
-                        .getDouble("lng");
-
-                double lat = ((JSONArray) response.get("results")).getJSONObject(0)
-                        .getJSONObject("geometry").getJSONObject("location")
-                        .getDouble("lat");
-
-                LatLng coordRicerca = new LatLng(lat, lng);
-
-                CameraUpdate location = CameraUpdateFactory.newLatLngZoom(coordRicerca, 16);
-                _map.animateCamera(location);
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(MainActivity.this,
-                        "Indirizzo non riconosciuto.", Toast.LENGTH_SHORT).show();
-            }
-
-            hideProgressBar();
+    public void hideFab() {
+        if(mMultiFabButton != null) {
+            mMultiFabButton.hide();
         }
     }
+
+    // todo crea metodi toast e snackbar
+
+
+    public MappaGoogle getMappa() {
+        return _mappa;
+    }
+
+    public FirebaseHandler getFireHandler() {
+        return _firebaseHandler;
+    }
+
 }
