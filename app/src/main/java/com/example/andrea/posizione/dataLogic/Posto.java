@@ -1,29 +1,19 @@
-package com.example.andrea.posizione.model;
+package com.example.andrea.posizione.dataLogic;
 
 /**
- * Created by andrea on 21/09/17.
+ * Created by andrea on 23/09/17.
  */
 
-public class Segnalazione {
+public class Posto {
 
-    private String _userId;
     private double _latitudine;
     private double _longitudine;
 
-    public Segnalazione() {}
+    public Posto() {}
 
-    public Segnalazione(String userId, double latitudine, double longitudine) {
-        _userId = userId;
+    public Posto(double latitudine, double longitudine) {
         _latitudine = latitudine;
         _longitudine = longitudine;
-    }
-
-    public String getUserId() {
-        return _userId;
-    }
-
-    public void setUserId(String userId) {
-        _userId = userId;
     }
 
     public double getLatitudine() {
@@ -42,3 +32,4 @@ public class Segnalazione {
         _longitudine = longitudine;
     }
 }
+

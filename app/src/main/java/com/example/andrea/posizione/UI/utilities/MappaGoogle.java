@@ -1,13 +1,12 @@
-package com.example.andrea.posizione;
+package com.example.andrea.posizione.UI.utilities;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.widget.Toast;
 
+import com.example.andrea.posizione.R;
+import com.example.andrea.posizione.UI.MainActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -34,17 +33,18 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
     // riferimento alla mappa fornita da GoogleMaps API
     private GoogleMap mMappa;
 
-    // lista per la memorizzazione dei marker presenti nella mappa
+    // lista per la memorizzazione dei marker pronti per l'invio presenti nella mappa
     private List<Marker> mMarkerList = new ArrayList<>();
+
+    // attributo per la memorizzazione del marker provvisorio, mostrato nella mappa ma non pronto
+    // per essere inviato a firebase
+    private Marker mMarkerProvvisorio = null;
 
     // memorizza la disponibilità del permesso di geolocalizzazione
     private boolean mGeoPermessoDisponibile;
 
     // riferimento all'activity Main
     private MainActivity mMainActivity;
-
-    // riferimento all'istanza di gestione collegamento FireBase
-    private FirebaseHandler mFirbaseHandler;
 
     // attributo per accedere alla posizione dell'utente sfruttando GooglePlayServices
     private FusedLocationProviderClient mLocationProvider;
@@ -62,11 +62,10 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
      */
     public MappaGoogle(MainActivity a) {
         mMainActivity = a;
-        mFirbaseHandler = mMainActivity.getFireHandler();
 
         // inizializza la mappa
-        final SupportMapFragment mapFragment = (SupportMapFragment) a.getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        final SupportMapFragment mapFragment =
+                (SupportMapFragment) a.getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
@@ -89,14 +88,13 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
 
         // inizializza i servizi di localizzazione google
         mLocationProvider = LocationServices.getFusedLocationProviderClient(mMainActivity);
-
     }
 
 
     /**
      * Metodo richiamato dalla MainActivity al momento dell'ottenimento del permesso di
      * geolocalizzazione, tramite l'autorizzazione manuale dell'utente. Imposta il button per
-     * centrate la mappa nella propria posizione, oltre ad impostare il boolean di disp. geolocalizz.
+     * centrare la mappa nella propria posizione, oltre ad impostare il boolean di controllo
      */
     public void attivaPermessoGeolocalizzazione(int requestCode) {
         if (requestCode == PERMISSION_CODE) {
@@ -128,58 +126,89 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
         mMappa.moveCamera(CameraUpdateFactory.newLatLngZoom(COORD_INIZIALI, 15.0f));
 
         if (mGeoPermessoDisponibile)
-            try{
+            try {
                 mMappa.setMyLocationEnabled(true);
-            } catch (SecurityException ex)
-            {
+            } catch (SecurityException ex) {
                 ex.printStackTrace();
             }
     }
 
 
-
+    /**
+     * Al click prolungato sulla mappa, vengono eliminati tutti i markers
+     */
     @Override
     public void onMapLongClick(LatLng latLng) {
         eliminaTuttiMarkers();
     }
 
 
-
+    /**
+     * Al click sulla mappa, viene piazzato un marker provvisorio. Se è già presente un'altro marker
+     * provvisorio nella mappa, questo viene rimosso
+     */
     @Override
     public void onMapClick(LatLng latLng) {
-        Marker newMarker = mMappa.addMarker(new MarkerOptions().draggable(false).position(latLng));
-        newMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-        mMarkerList.add(newMarker);
-
+        poniMarkerProvvisorio(latLng);
     }
 
+
+    /**
+     * Al click sul marker, se il marker selezionato è quello provvisorio, lo pone tra la lista di
+     * invio. Altrimenti, lo elimina
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        //_markerLocation = marker;
-        //_markerLocation.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-        //_markerLocation.remove();
-        marker.remove();
-        mMarkerList.remove(marker);
+        if(marker.equals(mMarkerProvvisorio)) {
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            mMarkerProvvisorio = null;
+            mMarkerList.add(marker);
+
+        } else {
+            marker.remove();
+            mMarkerList.remove(marker);
+        }
+
         return false;
     }
 
-    public void eliminaTuttiMarkers() {
-        mMappa.clear();
-        mMarkerList.clear();
-        Toast.makeText(mMainActivity, "Tutti i markers eliminati.", Toast.LENGTH_SHORT).show();
+
+    void poniMarkerProvvisorio(LatLng posizione) {
+        if (mMarkerProvvisorio != null)
+            mMarkerProvvisorio.remove();
+
+        mMarkerProvvisorio
+                = mMappa.addMarker(new MarkerOptions().draggable(false).position(posizione));
     }
 
 
-    public void muoviMappaConAnimazione(LatLng posizione) {
+    /**
+     * Metodo per eliminare tutti i marker dalla mappa, oltre ai relativi riferimenti
+     */
+    public void eliminaTuttiMarkers() {
+        mMappa.clear();
+        mMarkerList.clear();
+        mMarkerProvvisorio = null;
+
+        mMainActivity.creaToast("Tutti i markers eliminati.");
+    }
+
+
+    /**
+     * Metodo per muovere la mappa in una determinata posizione
+     */
+    void muoviMappaConAnimazione(LatLng posizione) {
         CameraUpdate location = CameraUpdateFactory.newLatLngZoom(posizione, 16);
         mMappa.animateCamera(location);
     }
 
 
+    /**
+     * Metodo per gestire l'invio della propria posizione al DB
+     */
     public void inviaPosizioneGeolocalizzata() {
         if(mGeoPermessoDisponibile)
-            try
-            {
+            try {
                 mLocationProvider
                         .getLastLocation()
                         .addOnSuccessListener(mMainActivity, new OnSuccessListener<Location>() {
@@ -187,43 +216,40 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
                             public void onSuccess(Location location) {
                                 if(location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    mFirbaseHandler.sendLocationToFirebase(latLng);
+                                    mMainActivity.getFireHandler().sendLocationToFirebase(latLng);
 
-                                    Toast.makeText(mMainActivity, "Posizione inviata:\n" +
-                                                    "Lat: " + latLng.latitude + "\n" +
-                                                    "Lng: " + latLng.longitude,
-                                            Toast.LENGTH_LONG).show();
+                                    mMainActivity.creaToast("Posizione inviata:\n" +
+                                                            "Lat: " + latLng.latitude + "\n" +
+                                                            "Lng: " + latLng.longitude);
 
-                                    Snackbar.make(mMainActivity.findViewById(R.id.coordinator), "Posizione attuale inviata", Snackbar.LENGTH_LONG).show();
+                                   mMainActivity.creaSnackbar("Posizione attuale inviata.");
 
                                 } else {
-                                    Toast.makeText(mMainActivity, "Attiva la geolocalizzazione.",
-                                            Toast.LENGTH_SHORT).show();
+                                    mMainActivity.creaToast("Attiva la geolocalizzazione.");
                                 }
                             }
                         });
-            } catch (SecurityException ex)
-            {
+            } catch (SecurityException ex) {
                 ex.printStackTrace();
-                Toast.makeText(mMainActivity, "Errore: " + ex, Toast.LENGTH_LONG).show();
+                mMainActivity.creaToast("Errore: " + ex);
             }
     }
 
 
-
+    /**
+     * Metodo per gestire l'invio dei markers al DB
+     */
     public void inviaPosizioneMarkers() {
-        if(mMarkerList.size() > 0)
-        {
+        if(mMarkerList.size() > 0) {
             for(Marker m : mMarkerList) {
-                mFirbaseHandler.sendLocationToFirebase(m.getPosition());
+                mMainActivity.getFireHandler().sendLocationToFirebase(m.getPosition());
                 m.remove();
             }
 
             mMarkerList.clear();
-
-            Snackbar.make(mMainActivity.findViewById(R.id.coordinator), "Posizione markers inviata", Snackbar.LENGTH_LONG).show();
+            mMainActivity.creaSnackbar("Posizione markers inviata.");
         } else {
-            Toast.makeText(mMainActivity, "Nessun marker selezionato.",Toast.LENGTH_SHORT).show();
+            mMainActivity.creaToast("Nessun marker selezionato.");
         }
     }
 }

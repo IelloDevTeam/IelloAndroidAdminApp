@@ -1,4 +1,4 @@
-package com.example.andrea.posizione;
+package com.example.andrea.posizione.UI.utilities;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -8,6 +8,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
+import com.example.andrea.posizione.R;
+import com.example.andrea.posizione.UI.MainActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -17,7 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/** Created by riccardomaldini on 05/10/17.
+/**
+ * Created by riccardomaldini on 05/10/17.
  * AsyncTask strettamente collegato all'activity, quindi definito qua dentro. Sposta la mappa
  * a seconda dell'indirizzo selezionato dall'utente.
  */
@@ -63,6 +66,7 @@ public class AsyncRicercaIndirizzo extends AsyncTask<Void, JSONObject, JSONObjec
 
             LatLng coordRicerca = new LatLng(lat, lng);
             mMainActivity.getMappa().muoviMappaConAnimazione(coordRicerca);
+            mMainActivity.getMappa().poniMarkerProvvisorio(coordRicerca);
 
         } catch (Exception e) {
             e.printStackTrace();

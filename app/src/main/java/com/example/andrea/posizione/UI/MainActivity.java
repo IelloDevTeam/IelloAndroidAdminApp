@@ -1,7 +1,8 @@
-package com.example.andrea.posizione;
+package com.example.andrea.posizione.UI;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.andrea.posizione.UI.utilities.AsyncRicercaIndirizzo;
+import com.example.andrea.posizione.UI.utilities.FirebaseHandler;
+import com.example.andrea.posizione.UI.utilities.MappaGoogle;
+import com.example.andrea.posizione.R;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
@@ -216,6 +223,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // todo crea metodi toast e snackbar
+    public void creaToast(String testo) {
+        Toast.makeText(this, testo, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void creaSnackbar(String testo) {
+        Snackbar.make(findViewById(R.id.coordinator), testo, Snackbar.LENGTH_LONG).show();
+
+    }
+
 
 
     public MappaGoogle getMappa() {

@@ -1,10 +1,10 @@
-package com.example.andrea.posizione;
+package com.example.andrea.posizione.UI.utilities;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.andrea.posizione.model.Posto;
+import com.example.andrea.posizione.UI.MainActivity;
+import com.example.andrea.posizione.dataLogic.Posto;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -15,7 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by riccardomaldini on 05/10/17.
- * Classe per la gestione del collegamento firebase
+ * Classe per la gestione del collegamento al DB Firebase remoto del progetto.
  */
 public class FirebaseHandler implements OnCompleteListener<AuthResult>{
 
@@ -27,45 +27,43 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
     private MainActivity mMainActivity;
 
     // costanti utili
-    private static final String TAG = MainActivity.class.getName();
+    private static final String TAG = "FireHandler";
     private static final String TAG_POSTI = "posti";
+
 
 
     /**
      * Costruttore con il quale vengono inizializzati i vari componenti
      */
     public FirebaseHandler(MainActivity a) {
+        // inizializza il riferimento all'activity
         mMainActivity = a;
 
         // inizializza il db firebase
         mFirebaseDB = FirebaseDatabase.getInstance();
         mFireAuth = FirebaseAuth.getInstance();
-
         mFireAuth.signInWithEmailAndPassword("piattaforme@gmail.com", "piattaforme101")
                 .addOnCompleteListener(mMainActivity, this);
-
     }
 
 
     /**
-     * Metodo eseguito al termine dell'autenticazione
+     * Metodo eseguito al termine dell'autenticazione alla piattaforma Firebase
      */
     @Override
     public void onComplete(@NonNull Task task) {
             if (task.isSuccessful()) {
                 // mostra un messaggio all'utente
                 Log.d(TAG, "signInWithEmail:success");
-                Toast.makeText(mMainActivity, "Connesso al DB Firebase! L'app è pronta a inviare posizioni.",
-                        Toast.LENGTH_LONG).show();
+                mMainActivity.creaToast("Connesso al DB Firebase! L'app è pronta a inviare posizioni.");
 
                 // aggiorna l'interfaccia rendendo disponibili le varie azioni
                 mMainActivity.showFab();
 
             } else {
                 // mostra un messaggio all'utente
-                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                Toast.makeText(mMainActivity, "Non sei connesso al Database. Non pioi effettuare operazioni.",
-                        Toast.LENGTH_LONG).show();
+                Log.d(TAG, "signInWithEmail:failure", task.getException());
+                mMainActivity.creaToast("Non sei connesso al DB. Non puoi effettuare operazioni.");
 
                 // nascondi i fab, in quanto senza autenticazione non si può
                 // intraprendere nessuna azione
@@ -77,7 +75,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
 
 
     /**
-     * Metodo per ottenere l'eventuale utente autenticato tramite firebase
+     * Metodo per ottenere l'eventuale utente autenticato tramite Firebase
      */
     public FirebaseUser getFirebaseUser() {
         return mFireAuth.getCurrentUser();
@@ -87,13 +85,13 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
     /**
      * Metodo per l'invio di una singola posizione al DB remoto
      */
-    public void sendLocationToFirebase(LatLng location) {
+    void sendLocationToFirebase(LatLng location) {
         if (location != null && getFirebaseUser() != null) {
             Posto posto = new Posto(location.latitude, location.longitude);
             mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
 
         } else {
-            Toast.makeText(mMainActivity, "Nessuna posizione selezionata.", Toast.LENGTH_SHORT).show();
+            Log.d("FireHandler", "Errore inaspettato nell'invio della posizione");
         }
     }
 }
