@@ -190,7 +190,7 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
         mMarkerList.clear();
         mMarkerProvvisorio = null;
 
-        mMainActivity.creaToast("Tutti i markers eliminati.");
+        mMainActivity.creaToast(R.string.markers_eliminati);
     }
 
 
@@ -217,15 +217,10 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
                                 if(location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                     mMainActivity.getFireHandler().sendLocationToFirebase(latLng);
-
-                                    mMainActivity.creaToast("Posizione inviata:\n" +
-                                                            "Lat: " + latLng.latitude + "\n" +
-                                                            "Lng: " + latLng.longitude);
-
-                                   mMainActivity.creaSnackbar("Posizione attuale inviata.");
+                                    mMainActivity.creaSnackbar(R.string.posizione_inviata);
 
                                 } else {
-                                    mMainActivity.creaToast("Attiva la geolocalizzazione.");
+                                    mMainActivity.creaToast(R.string.attivare_gps);
                                 }
                             }
                         });
@@ -247,9 +242,9 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
             }
 
             mMarkerList.clear();
-            mMainActivity.creaSnackbar("Posizione markers inviata.");
+            mMainActivity.creaSnackbar(R.string.posizione_markers_inviata);
         } else {
-            mMainActivity.creaToast("Nessun marker selezionato.");
+            mMainActivity.creaToast(R.string.markers_non_selezionati);
         }
     }
 }

@@ -5,15 +5,4 @@
     <color name="colorAccent">#ffc400</color>
 
     <color name="white">#FFFFFF</color>
-    <color name="whiteTrasparent">#A4FFFFFF</color>
-    <color name="semiTransparent">#623b3b3b</color>
-    <color name="lightGrey">#FFE0E0E0</color>
-    <color name="lightLightGrey">#f4f4f4</color>
-    <color name="lightGreyText">#A6A6A6</color>
-    <color name="darkGrey">#D2263238</color>
-    <color name="greyEbbasta">#838383</color>
-    <color name="clearBackground">#FFF5F5F5</color>
-    <color name="black">#000000</color>
-    <color name="transparent">#00000000</color>
-    <color name="blueNavigation">#039be5</color>
 </resources>

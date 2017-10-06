@@ -194,9 +194,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     /*
-     * Metodi per accedere alla progressBar, utilizzata come schermata di caricamento durante la
-     * ricerca dei parcheggi.
+     * Metodi per accedere a elementi dell'interfaccia dell'esterno della classe.
      */
 
     public void showProgressBar() {
@@ -222,17 +222,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // todo crea metodi toast e snackbar
     public void creaToast(String testo) {
         Toast.makeText(this, testo, Toast.LENGTH_SHORT).show();
     }
 
+    public void creaToast(int resTesto) {
+        Toast.makeText(this, resTesto, Toast.LENGTH_SHORT).show();
+    }
 
     public void creaSnackbar(String testo) {
         Snackbar.make(findViewById(R.id.coordinator), testo, Snackbar.LENGTH_LONG).show();
-
     }
 
+    public void creaSnackbar(int resTesto) {
+        Snackbar.make(findViewById(R.id.coordinator), resTesto, Snackbar.LENGTH_LONG).show();
+
+    }
 
 
     public MappaGoogle getMappa() {

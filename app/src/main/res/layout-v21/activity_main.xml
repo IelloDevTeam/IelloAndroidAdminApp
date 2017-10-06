@@ -20,55 +20,51 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-            <RelativeLayout
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp">
+
+            <EditText
+                android:id="@+id/editIndirizzo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp">
+                android:layout_toStartOf="@+id/fabSearch"
+                android:ems="10"
+                android:hint="@string/hint_edit_indirizzo"
+                android:imeOptions="actionSearch"
+                android:inputType="textCapWords"
+                android:maxLines="1"
+                android:textColor="@color/white"
+                android:textColorHighlight="@color/white"
+                tools:inputType="textPostalAddress" />
 
-                <EditText
-                    android:id="@+id/editIndirizzo"
-                    android:textColor="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColorHighlight="@color/white"
-                    android:layout_toLeftOf="@+id/fabSearch"
-                    android:layout_toStartOf="@+id/fabSearch"
-                    android:inputType="textCapWords"
-                    android:ems="10"
-                    android:hint="@string/hint_edit_indirizzo"
-                    android:imeOptions="actionSearch"
-                    android:maxLines="1"
-                    tools:inputType="textPostalAddress" />
-
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fabSearch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:clickable="true"
-                    app:backgroundTint="@color/colorPrimaryDark"
-                    app:fabSize="mini"
-                    app:srcCompat="@drawable/ic_search_white_24dp" />
-            </RelativeLayout>
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:clickable="true"
+                app:backgroundTint="@color/colorPrimaryDark"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_search_white_24dp" />
+        </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        
+
         <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:layout_height="match_parent"/>
 
         <FrameLayout
             android:id="@+id/clippedProgressBar"
@@ -85,18 +81,19 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:indeterminate="true" />
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/white"
+                    android:progressBackgroundTint="@color/colorPrimary" />
             </FrameLayout>
         </FrameLayout>
 
         <io.github.yavski.fabspeeddial.FabSpeedDial
-            android:visibility="gone"
             android:id="@+id/customFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:visibility="gone"
             app:fabBackgroundTint="@color/colorPrimary"
             app:fabGravity="bottom_end"
             app:fabMenu="@menu/menu_fab_main"

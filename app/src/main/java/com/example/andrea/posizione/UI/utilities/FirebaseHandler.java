@@ -3,6 +3,7 @@ package com.example.andrea.posizione.UI.utilities;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.andrea.posizione.R;
 import com.example.andrea.posizione.UI.MainActivity;
 import com.example.andrea.posizione.dataLogic.Posto;
 import com.google.android.gms.maps.model.LatLng;
@@ -55,7 +56,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
             if (task.isSuccessful()) {
                 // mostra un messaggio all'utente
                 Log.d(TAG, "signInWithEmail:success");
-                mMainActivity.creaToast("Connesso al DB Firebase! L'app è pronta a inviare posizioni.");
+                mMainActivity.creaToast(R.string.authentication_success);
 
                 // aggiorna l'interfaccia rendendo disponibili le varie azioni
                 mMainActivity.showFab();
@@ -63,7 +64,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
             } else {
                 // mostra un messaggio all'utente
                 Log.d(TAG, "signInWithEmail:failure", task.getException());
-                mMainActivity.creaToast("Non sei connesso al DB. Non puoi effettuare operazioni.");
+                mMainActivity.creaToast(R.string.authentication_fail);
 
                 // nascondi i fab, in quanto senza autenticazione non si può
                 // intraprendere nessuna azione
@@ -89,9 +90,10 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
         if (location != null && getFirebaseUser() != null) {
             Posto posto = new Posto(location.latitude, location.longitude);
             mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
+            Log.d(TAG, "Inviata nuova coordinata al DB, " + location.toString());
 
         } else {
-            Log.d("FireHandler", "Errore inaspettato nell'invio della posizione");
+            Log.d(TAG, "Errore inaspettato nell'invio della posizione");
         }
     }
 }

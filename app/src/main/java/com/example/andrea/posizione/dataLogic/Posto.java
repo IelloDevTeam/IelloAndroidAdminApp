@@ -2,6 +2,8 @@ package com.example.andrea.posizione.dataLogic;
 
 /**
  * Created by andrea on 23/09/17.
+ * Classe modello rappresentante un parcheggio. Getter e setter sono necessari per l'integrazione
+ * con firebase.
  */
 
 public class Posto {

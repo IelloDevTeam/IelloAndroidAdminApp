@@ -2,6 +2,8 @@ package com.example.andrea.posizione.dataLogic;
 
 /**
  * Created by andrea on 21/09/17.
+ * Classe modello rappresentante una segnalazione. Getter e setter sono necessari per l'integrazione
+ * con firebase.
  */
 
 public class Segnalazione {
