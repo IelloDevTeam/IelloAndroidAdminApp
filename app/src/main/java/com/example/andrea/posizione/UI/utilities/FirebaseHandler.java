@@ -1,5 +1,7 @@
 package com.example.andrea.posizione.UI.utilities;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -13,6 +15,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by riccardomaldini on 05/10/17.
@@ -86,11 +92,25 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
     /**
      * Metodo per l'invio di una singola posizione al DB remoto
      */
-    void sendLocationToFirebase(LatLng location) {
-        if (location != null && getFirebaseUser() != null) {
-            Posto posto = new Posto(location.latitude, location.longitude);
+    void sendLocationToFirebase(LatLng pos) {
+        if (pos != null && getFirebaseUser() != null) {
+
+            // ricava l'indirizzo della coordinata tramite Google Geocoding API, se disponibile
+            String indirizzo;
+            Geocoder geocoder = new Geocoder(mMainActivity, Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(pos.latitude, pos.longitude, 1);
+                indirizzo = addresses.get(0).getAddressLine(0);
+            } catch (IOException e) {
+                e.printStackTrace();
+                indirizzo = "Indirizzo non disponibile";
+            }
+
+            // todo carica l'indirizzo nell'oggetto modello POSTO
+            Posto posto = new Posto(pos.latitude, pos.longitude);
+
             mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
-            Log.d(TAG, "Inviata nuova coordinata al DB, " + location.toString());
+            Log.d(TAG, "Inviata nuova coordinata al DB, " + pos.toString());
 
         } else {
             Log.d(TAG, "Errore inaspettato nell'invio della posizione");

@@ -8,7 +8,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,13 +37,14 @@ public class MainActivity extends AppCompatActivity {
     // riferimento a elementi d'interfaccia
     private FrameLayout mProgressBar;
     private EditText mEditIndirizzo;
+    private TextView mTxtMarkerSelezionati;
     private FabSpeedDial mMultiFabButton;
 
     // istanza del gestore del collegamento a DB Firebase
-    private FirebaseHandler _firebaseHandler;
+    private FirebaseHandler mFirebaseHandler;
 
     // istanza del gestore della mappa
-    private MappaGoogle _mappa;
+    private MappaGoogle mMappa;
 
 
 
@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // inizializza il gestore della mappa
-        _mappa = new MappaGoogle(this);
+        mMappa = new MappaGoogle(this);
 
         // inizializza gestore del collegamento Firebase
-        _firebaseHandler = new FirebaseHandler(this);
+        mFirebaseHandler = new FirebaseHandler(this);
 
         // inizializza i fab button
         mMultiFabButton = findViewById(R.id.customFab);
@@ -79,19 +79,19 @@ public class MainActivity extends AppCompatActivity {
                 switch(menuItem.getItemId()) {
                     case R.id.action_send_location: {
                         // invio della propria posizione al DB Firebase
-                        _mappa.inviaPosizioneGeolocalizzata();
+                        mMappa.inviaPosizioneGeolocalizzata();
                         break;
                     }
 
                     case R.id.action_send_marker: {
                         // invio al DB Firebase dei marker selezionati in mappa
-                        _mappa.inviaPosizioneMarkers();
+                        mMappa.inviaPosizioneMarkers();
                         break;
                     }
 
                     case R.id.action_elimina_marker: {
                         // eliminazione di tutti i marker dalla mappa
-                        _mappa.eliminaTuttiMarkers();
+                        mMappa.eliminaTuttiMarkers();
                     }
                 }
                 return false;
@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // inizializzazione vari elementi di interfaccia
         mProgressBar = findViewById(R.id.clippedProgressBar);
         mEditIndirizzo = findViewById(R.id.editIndirizzo);
+        mTxtMarkerSelezionati = findViewById(R.id.txtMarkerSelezionati);
         FloatingActionButton fabSearch = findViewById(R.id.fabSearch);
 
         // al click sulla lente d'ingrandimento presente sulla tastiera, avvia la ricerca
@@ -110,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String query = v.getText().toString();
-                    AsyncRicercaIndirizzo searchAddr = new AsyncRicercaIndirizzo(MainActivity.this, query);
+                    AsyncRicercaIndirizzo searchAddr
+                            = new AsyncRicercaIndirizzo(MainActivity.this, query);
                     searchAddr.execute();
                     return true;
                 }
@@ -123,19 +125,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String query = mEditIndirizzo.getText().toString();
-                AsyncRicercaIndirizzo searchAddr = new AsyncRicercaIndirizzo(MainActivity.this, query);
+                AsyncRicercaIndirizzo searchAddr
+                        = new AsyncRicercaIndirizzo(MainActivity.this, query);
                 searchAddr.execute();
             }
         });
 
+        // inizializza la casella di testo dei markers
+        modificaTxtMarkerDaCaricare(0);
     }
+
 
 
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        if(_firebaseHandler.getFirebaseUser() == null) {
+        if(mFirebaseHandler.getFirebaseUser() == null) {
             hideFab();
         }
 
@@ -145,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        _mappa.attivaPermessoGeolocalizzazione(requestCode);
+        mMappa.attivaPermessoGeolocalizzazione(requestCode);
     }
 
 
@@ -162,13 +168,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // qua vanno gestiti i click sulle voci di menu
         switch(item.getItemId()) {
-
             case R.id.action_help:
                 avviaDialogHelp();
-                break;
-
-            default:
-                Log.i("tabbedMain", "errore click voci menu");
                 break;
         }
 
@@ -222,30 +223,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void creaToast(String testo) {
-        Toast.makeText(this, testo, Toast.LENGTH_SHORT).show();
-    }
 
     public void creaToast(int resTesto) {
         Toast.makeText(this, resTesto, Toast.LENGTH_SHORT).show();
     }
 
-    public void creaSnackbar(String testo) {
-        Snackbar.make(findViewById(R.id.coordinator), testo, Snackbar.LENGTH_LONG).show();
-    }
 
     public void creaSnackbar(int resTesto) {
         Snackbar.make(findViewById(R.id.coordinator), resTesto, Snackbar.LENGTH_LONG).show();
+    }
 
+
+    public void modificaTxtMarkerDaCaricare(int numMarkers) {
+        String testoTxtView = "" + numMarkers + " " + getString(R.string.marker_selezionati);
+        mTxtMarkerSelezionati.setText(testoTxtView);
     }
 
 
     public MappaGoogle getMappa() {
-        return _mappa;
+        return mMappa;
     }
 
     public FirebaseHandler getFireHandler() {
-        return _firebaseHandler;
+        return mFirebaseHandler;
     }
 
 }

@@ -5,4 +5,5 @@
     <color name="colorAccent">#ffc400</color>
 
     <color name="white">#FFFFFF</color>
+    <color name="whiteTrasparent">#A4FFFFFF</color>
 </resources>

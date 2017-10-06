@@ -27,7 +27,7 @@ import java.util.List;
  * Created by riccardomaldini on 05/10/17.
  * Metodo che racchiude metodologie per interagire con la mappa fornita da GoogleMaps
  */
-public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
+public class MappaGoogle implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener  {
 
     // riferimento alla mappa fornita da GoogleMaps API
@@ -120,7 +120,6 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
         mMappa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         mMappa.getUiSettings().setMyLocationButtonEnabled(true);
         mMappa.setMinZoomPreference(5);
-        mMappa.setOnMapLongClickListener(this);
         mMappa.setOnMapClickListener(this);
         mMappa.setOnMarkerClickListener(this);
         mMappa.moveCamera(CameraUpdateFactory.newLatLngZoom(COORD_INIZIALI, 15.0f));
@@ -131,15 +130,6 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
             } catch (SecurityException ex) {
                 ex.printStackTrace();
             }
-    }
-
-
-    /**
-     * Al click prolungato sulla mappa, vengono eliminati tutti i markers
-     */
-    @Override
-    public void onMapLongClick(LatLng latLng) {
-        eliminaTuttiMarkers();
     }
 
 
@@ -169,6 +159,8 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
             mMarkerList.remove(marker);
         }
 
+        mMainActivity.modificaTxtMarkerDaCaricare(mMarkerList.size());
+
         return false;
     }
 
@@ -190,6 +182,7 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
         mMarkerList.clear();
         mMarkerProvvisorio = null;
 
+        mMainActivity.modificaTxtMarkerDaCaricare(mMarkerList.size());
         mMainActivity.creaToast(R.string.markers_eliminati);
     }
 
@@ -207,14 +200,16 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
      * Metodo per gestire l'invio della propria posizione al DB
      */
     public void inviaPosizioneGeolocalizzata() {
-        if(mGeoPermessoDisponibile)
+        if(mGeoPermessoDisponibile) {
+            mMainActivity.showProgressBar();
+
             try {
                 mLocationProvider
                         .getLastLocation()
                         .addOnSuccessListener(mMainActivity, new OnSuccessListener<Location>() {
                             @Override
                             public void onSuccess(Location location) {
-                                if(location != null) {
+                                if (location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                     mMainActivity.getFireHandler().sendLocationToFirebase(latLng);
                                     mMainActivity.creaSnackbar(R.string.posizione_inviata);
@@ -226,8 +221,10 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
                         });
             } catch (SecurityException ex) {
                 ex.printStackTrace();
-                mMainActivity.creaToast("Errore: " + ex);
             }
+
+            mMainActivity.hideProgressBar();
+        }
     }
 
 
@@ -236,13 +233,17 @@ public class MappaGoogle implements OnMapReadyCallback, GoogleMap.OnMapLongClick
      */
     public void inviaPosizioneMarkers() {
         if(mMarkerList.size() > 0) {
+            mMainActivity.showProgressBar();
+
             for(Marker m : mMarkerList) {
                 mMainActivity.getFireHandler().sendLocationToFirebase(m.getPosition());
                 m.remove();
             }
-
             mMarkerList.clear();
+
+            mMainActivity.modificaTxtMarkerDaCaricare(mMarkerList.size());
             mMainActivity.creaSnackbar(R.string.posizione_markers_inviata);
+            mMainActivity.hideProgressBar();
         } else {
             mMainActivity.creaToast(R.string.markers_non_selezionati);
         }
