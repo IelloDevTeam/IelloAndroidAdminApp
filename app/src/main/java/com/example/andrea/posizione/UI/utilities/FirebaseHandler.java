@@ -3,8 +3,8 @@ package com.example.andrea.posizione.UI.utilities;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.andrea.posizione.AsyncTask2;
 import com.example.andrea.posizione.UI.MainActivity;
-import com.example.andrea.posizione.dataLogic.Posto;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -12,6 +12,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 /**
  * Created by riccardomaldini on 05/10/17.
@@ -85,11 +87,24 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
     /**
      * Metodo per l'invio di una singola posizione al DB remoto
      */
-    void sendLocationToFirebase(LatLng location) {
+    void sendLocationToFirebase(final LatLng location) {
         if (location != null && getFirebaseUser() != null) {
-            Posto posto = new Posto(location.latitude, location.longitude);
-            mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
-
+            ReverseGeocode reverseGeocode = new ReverseGeocode(mMainActivity);
+            reverseGeocode.setCallback(new AsyncTask2.Asyntask2Callback<Double, Void, String>() {
+                @Override
+                public void OnComplete(String result) {
+                    /* Quando il task ha completato al traduzione ad indirizzo carico su firebase */
+                    if(result != null)
+                    {
+                        HashMap<String, Object> posto = new HashMap<>();
+                        posto.put("latitudine", location.latitude);
+                        posto.put("longitudine", location.longitude);
+                        posto.put("street_address", result);
+                        mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
+                    }
+                }
+            });
+            reverseGeocode.execute(location.latitude, location.longitude);
         } else {
             Log.d("FireHandler", "Errore inaspettato nell'invio della posizione");
         }
