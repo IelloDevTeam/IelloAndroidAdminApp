@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String query = v.getText().toString();
+                                String query = v.getText().toString();
                     AsyncRicercaIndirizzo searchAddr
                             = new AsyncRicercaIndirizzo(MainActivity.this, query);
                     searchAddr.execute();

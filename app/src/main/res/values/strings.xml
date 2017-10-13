@@ -30,5 +30,6 @@
     <string name="posizione_markers_inviata">Posizione markers inviata.</string>
     <string name="markers_non_selezionati">Nessun marker selezionato.</string>
     <string name="marker_selezionati">marker da caricare</string>
+    <string name="errore_invio_posizione">Errore nell\'invio della posizione al DB.</string>
 
 </resources>

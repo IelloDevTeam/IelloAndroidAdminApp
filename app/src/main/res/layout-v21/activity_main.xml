@@ -81,7 +81,7 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:indeterminate="true"
+                    android:indeterminateOnly="true"
                     android:indeterminateTint="@color/white"
                     android:progressBackgroundTint="@color/colorPrimary" />
             </FrameLayout>
