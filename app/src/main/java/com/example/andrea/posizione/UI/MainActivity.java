@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -15,14 +16,16 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.andrea.posizione.UI.utilities.AsyncRicercaIndirizzo;
+import com.example.andrea.posizione.UI.utilities.AsyncDownloadParcheggi;
+import com.example.andrea.posizione.UI.utilities.AsyncRicercaPerIndirizzo;
 import com.example.andrea.posizione.UI.utilities.FirebaseHandler;
 import com.example.andrea.posizione.UI.utilities.MappaGoogle;
 import com.example.andrea.posizione.R;
+import com.example.andrea.posizione.UI.utilities.ProgressBarHandler;
+import com.google.android.gms.maps.model.LatLng;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
@@ -35,9 +38,8 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 public class MainActivity extends AppCompatActivity {
 
     // riferimento a elementi d'interfaccia
-    private FrameLayout mProgressBar;
     private EditText mEditIndirizzo;
-    private TextView mTxtMarkerSelezionati;
+    private TextView mTxtMarkerSelezionati, mTxtMarkerSospeso, mTxtMarkerPresenti;
     private FabSpeedDial mMultiFabButton;
 
     // istanza del gestore del collegamento a DB Firebase
@@ -45,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
 
     // istanza del gestore della mappa
     private MappaGoogle mMappa;
+
+    // istanza del gestore della progBar
+    private ProgressBarHandler mProgHandler;
+
+    // compatibilità immagini vettoriali android pre-lollipop
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
 
 
 
@@ -65,11 +75,15 @@ public class MainActivity extends AppCompatActivity {
         // mantiene lo schermo acceso durante l'utilizzo dell'app
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        // inizializza il gestore della progressBar
+        mProgHandler = new ProgressBarHandler(this);
+
         // inizializza il gestore della mappa
         mMappa = new MappaGoogle(this);
 
         // inizializza gestore del collegamento Firebase
         mFirebaseHandler = new FirebaseHandler(this);
+
 
         // inizializza i fab button
         mMultiFabButton = findViewById(R.id.customFab);
@@ -92,6 +106,14 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_elimina_marker: {
                         // eliminazione di tutti i marker dalla mappa
                         mMappa.eliminaTuttiMarkers();
+                        break;
+                    }
+
+                    case R.id.action_parcheggi_presenti: {
+                        LatLng coordCorrenti = mMappa.getPosizioneAttualeMappa();
+                        AsyncDownloadParcheggi adp
+                                = new AsyncDownloadParcheggi(MainActivity.this, coordCorrenti);
+                        adp.execute();
                     }
                 }
                 return false;
@@ -99,9 +121,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // inizializzazione vari elementi di interfaccia
-        mProgressBar = findViewById(R.id.clippedProgressBar);
         mEditIndirizzo = findViewById(R.id.editIndirizzo);
         mTxtMarkerSelezionati = findViewById(R.id.txtMarkerSelezionati);
+        mTxtMarkerSospeso = findViewById(R.id.txtMarkerInSospeso);
+        mTxtMarkerPresenti = findViewById(R.id.txtMarkerPresenti);
         FloatingActionButton fabSearch = findViewById(R.id.fabSearch);
 
         // al click sulla lente d'ingrandimento presente sulla tastiera, avvia la ricerca
@@ -111,8 +134,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                                 String query = v.getText().toString();
-                    AsyncRicercaIndirizzo searchAddr
-                            = new AsyncRicercaIndirizzo(MainActivity.this, query);
+                    AsyncRicercaPerIndirizzo searchAddr
+                            = new AsyncRicercaPerIndirizzo(MainActivity.this, query);
                     searchAddr.execute();
                     return true;
                 }
@@ -125,14 +148,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String query = mEditIndirizzo.getText().toString();
-                AsyncRicercaIndirizzo searchAddr
-                        = new AsyncRicercaIndirizzo(MainActivity.this, query);
+                AsyncRicercaPerIndirizzo searchAddr
+                        = new AsyncRicercaPerIndirizzo(MainActivity.this, query);
                 searchAddr.execute();
             }
         });
 
+        // avvia una prima ricerca dei markers presenti
+        AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(this, MappaGoogle.COORD_INIZIALI);
+        adp.execute();
+
         // inizializza la casella di testo dei markers
         modificaTxtMarkerDaCaricare(0);
+        modificaTxtMarkerInSospeso(false);
+        modificaTxtMarkerPresenti(0);
     }
 
 
@@ -200,15 +229,6 @@ public class MainActivity extends AppCompatActivity {
      * Metodi per accedere a elementi dell'interfaccia dell'esterno della classe.
      */
 
-    public void showProgressBar() {
-        if (mProgressBar != null)
-            mProgressBar.setVisibility(View.VISIBLE);
-    }
-
-    public void hideProgressBar() {
-        if(mProgressBar != null)
-            mProgressBar.setVisibility(View.GONE);
-    }
 
 
     public void showFab() {
@@ -239,6 +259,26 @@ public class MainActivity extends AppCompatActivity {
         mTxtMarkerSelezionati.setText(testoTxtView);
     }
 
+
+    public void modificaTxtMarkerPresenti(int numMarkers) {
+        String testoTxtView = "" + numMarkers + " " + getString(R.string.marker_gi_presenti_in_zona);
+        mTxtMarkerPresenti.setText(testoTxtView);
+    }
+
+
+    public void modificaTxtMarkerInSospeso(boolean inSospeso) {
+        String testoTxtView;
+        if(inSospeso)
+            testoTxtView = "1" + " " + getString(R.string.marker_in_sospeso);
+        else {
+            testoTxtView = "0" + " " + getString(R.string.marker_in_sospeso);
+        }
+        mTxtMarkerSospeso.setText(testoTxtView);
+    }
+
+    public ProgressBarHandler getProgHandler() {
+        return mProgHandler;
+    }
 
     public MappaGoogle getMappa() {
         return mMappa;

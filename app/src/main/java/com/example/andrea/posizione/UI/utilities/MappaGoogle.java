@@ -7,6 +7,8 @@ import android.support.v4.app.ActivityCompat;
 
 import com.example.andrea.posizione.R;
 import com.example.andrea.posizione.UI.MainActivity;
+import com.example.andrea.posizione.UI.parcheggiScaricati.ElencoParcheggi;
+import com.example.andrea.posizione.UI.parcheggiScaricati.Parcheggio;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -34,7 +36,10 @@ public class MappaGoogle implements OnMapReadyCallback,
     private GoogleMap mMappa;
 
     // lista per la memorizzazione dei marker pronti per l'invio presenti nella mappa
-    private List<Marker> mMarkerList = new ArrayList<>();
+    private List<Marker> mMarkerListDaInviare = new ArrayList<>();
+
+    // lista dei markers presenti nella mappa
+    private List<Marker> mMarkerListPresenti = new ArrayList<>();
 
     // attributo per la memorizzazione del marker provvisorio, mostrato nella mappa ma non pronto
     // per essere inviato a firebase
@@ -50,10 +55,15 @@ public class MappaGoogle implements OnMapReadyCallback,
     private FusedLocationProviderClient mLocationProvider;
 
     // coordinate iniziale impostate su urbino di default
-    private static final LatLng COORD_INIZIALI = new LatLng(43.7262568, 12.6365634);
+    public static final LatLng COORD_INIZIALI = new LatLng(43.7262568, 12.6365634);
 
     // costante utile
     private static final int PERMISSION_CODE = 100;
+
+    // costanti utilizzate per distinguere la tipologia del marker
+    private static final String M_PRESENTE = "M_PRESENTE";
+    private static final String M_PROVVISORIO = "M_PROVVISORIO";
+    private static final String M_INVIARE = "M_INVIARE";
 
 
 
@@ -149,19 +159,67 @@ public class MappaGoogle implements OnMapReadyCallback,
      */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if(marker.equals(mMarkerProvvisorio)) {
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-            mMarkerProvvisorio = null;
-            mMarkerList.add(marker);
+        // distingui la tipologia di marker
+        String tipologia = tipologiaMarker(marker);
 
-        } else {
-            marker.remove();
-            mMarkerList.remove(marker);
+        switch (tipologia) {
+            case M_PROVVISORIO: {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(52));
+                mMarkerProvvisorio = null;
+                mMarkerListDaInviare.add(marker);
+                break;
+            }
+            case M_INVIARE: {
+                marker.remove();
+                mMarkerListDaInviare.remove(marker);
+                break;
+            }
+
+            default: {
+                // non fare niente
+            }
         }
 
-        mMainActivity.modificaTxtMarkerDaCaricare(mMarkerList.size());
+        mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
+        mMainActivity.modificaTxtMarkerInSospeso(false);
 
-        return false;
+        // serve a gestire il comportamento di default della mappa
+        if (tipologia.equals(M_PROVVISORIO) || tipologia.equals(M_INVIARE))
+            return true;
+        else
+            return false;
+    }
+
+
+    /**
+     * distingue la tipologia del marker passato in ingresso.
+     */
+    private String tipologiaMarker(Marker mDaTestare) {
+        if (mDaTestare.equals(mMarkerProvvisorio))
+            return M_PROVVISORIO;
+        else {
+            Marker result = null;
+
+            for(Marker daInv : mMarkerListDaInviare) {
+                if (mDaTestare.equals(daInv))
+                    result = daInv;
+            }
+
+            if (result != null) {
+                return M_INVIARE;
+            }
+
+            for(Marker pres : mMarkerListPresenti) {
+                if (mDaTestare.equals(pres))
+                    result = pres;
+            }
+
+            if (result != null) {
+                return M_PRESENTE;
+            }
+
+            return M_PRESENTE;
+        }
     }
 
 
@@ -171,6 +229,7 @@ public class MappaGoogle implements OnMapReadyCallback,
 
         mMarkerProvvisorio
                 = mMappa.addMarker(new MarkerOptions().draggable(false).position(posizione));
+        mMainActivity.modificaTxtMarkerInSospeso(true);
     }
 
 
@@ -178,12 +237,28 @@ public class MappaGoogle implements OnMapReadyCallback,
      * Metodo per eliminare tutti i marker dalla mappa, oltre ai relativi riferimenti
      */
     public void eliminaTuttiMarkers() {
-        mMappa.clear();
-        mMarkerList.clear();
+        if (mMarkerProvvisorio != null)
+            mMarkerProvvisorio.remove();
+
+        for(Marker m : mMarkerListDaInviare)
+            m.remove();
+        mMarkerListDaInviare.clear();
         mMarkerProvvisorio = null;
 
-        mMainActivity.modificaTxtMarkerDaCaricare(mMarkerList.size());
+        mMainActivity.modificaTxtMarkerInSospeso(false);
+        mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
         mMainActivity.creaToast(R.string.markers_eliminati);
+    }
+
+    /**
+     * Elimina i markers 'verdi' e i loro riferimenti dalla mappa
+     */
+    public void eliminaMarkersVerdi() {
+        for (Marker m : mMarkerListPresenti)
+            m.remove();
+        mMarkerListPresenti.clear();
+
+        mMainActivity.modificaTxtMarkerPresenti(0);
     }
 
 
@@ -201,7 +276,7 @@ public class MappaGoogle implements OnMapReadyCallback,
      */
     public void inviaPosizioneGeolocalizzata() {
         if(mGeoPermessoDisponibile) {
-            mMainActivity.showProgressBar();
+            mMainActivity.getProgHandler().setSendPos(true);
 
             try {
                 mLocationProvider
@@ -211,19 +286,20 @@ public class MappaGoogle implements OnMapReadyCallback,
                             public void onSuccess(Location location) {
                                 if (location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    mMainActivity.getFireHandler().sendLocationToFirebase(latLng);
+                                    mMainActivity.getFireHandler().asyncSendLocationToFirebase(latLng);
                                     mMainActivity.creaSnackbar(R.string.posizione_inviata);
 
                                 } else {
                                     mMainActivity.creaToast(R.string.attivare_gps);
                                 }
+
+                                mMainActivity.getProgHandler().setSendPos(false);
                             }
                         });
             } catch (SecurityException ex) {
                 ex.printStackTrace();
+                mMainActivity.getProgHandler().setSendPos(false);
             }
-
-            mMainActivity.hideProgressBar();
         }
     }
 
@@ -232,20 +308,55 @@ public class MappaGoogle implements OnMapReadyCallback,
      * Metodo per gestire l'invio dei markers al DB
      */
     public void inviaPosizioneMarkers() {
-        if(mMarkerList.size() > 0) {
-            mMainActivity.showProgressBar();
+        if(mMarkerListDaInviare.size() > 0) {
+            mMainActivity.getProgHandler().setSendPos(true);
 
-            for(Marker m : mMarkerList) {
-                mMainActivity.getFireHandler().sendLocationToFirebase(m.getPosition());
+            for(Marker m : mMarkerListDaInviare) {
+                mMainActivity.getFireHandler().asyncSendLocationToFirebase(m.getPosition());
                 m.remove();
             }
-            mMarkerList.clear();
+            mMarkerListDaInviare.clear();
 
-            mMainActivity.modificaTxtMarkerDaCaricare(mMarkerList.size());
+            mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
+            mMainActivity.modificaTxtMarkerInSospeso(false);
             mMainActivity.creaSnackbar(R.string.posizione_markers_inviata);
-            mMainActivity.hideProgressBar();
+            mMainActivity.getProgHandler().setSendPos(false);
         } else {
             mMainActivity.creaToast(R.string.markers_non_selezionati);
         }
+    }
+
+
+
+    /**
+     * Imposta un marker per ogni parcheggio già presente in zona
+     */
+    public void settaMarkersGiaPresenti() {
+        // rimuovi tutti i markers
+        for(Marker m : mMarkerListPresenti)
+            m.remove();
+        mMarkerListPresenti.clear();
+
+        // aggiungi un marker per ogni posizione
+        for (Parcheggio p : ElencoParcheggi.getInstance().getListParcheggi()) {
+            LatLng coordParcheggio = p.getCoordinate();
+
+            Marker marker = mMappa.addMarker(new MarkerOptions()
+                    .position(coordParcheggio)
+                    .title(p.getIndirizzo())
+                    .icon(BitmapDescriptorFactory.defaultMarker(138)));
+
+
+            mMarkerListPresenti.add(marker);
+        }
+        mMainActivity.modificaTxtMarkerPresenti(ElencoParcheggi.getInstance().getListParcheggi().size());
+    }
+
+
+    /**
+     * Ricava le coordinate della posizione attuale della mappa.
+     */
+    public LatLng getPosizioneAttualeMappa() {
+        return mMappa.getCameraPosition().target;
     }
 }

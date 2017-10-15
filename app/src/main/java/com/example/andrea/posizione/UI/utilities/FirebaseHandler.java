@@ -46,6 +46,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
         mFireAuth = FirebaseAuth.getInstance();
         mFireAuth.signInWithEmailAndPassword("piattaforme@gmail.com", "piattaforme101")
                 .addOnCompleteListener(mMainActivity, this);
+        mMainActivity.getProgHandler().setConnectingDB(true);
     }
 
 
@@ -72,7 +73,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
                 mMainActivity.hideFab();
             }
 
-        mMainActivity.hideProgressBar();
+        mMainActivity.getProgHandler().setConnectingDB(false);
     }
 
 
@@ -84,33 +85,28 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
     }
 
 
+
     /**
      * Metodo per l'invio di una singola posizione al DB remoto
      */
-    void sendLocationToFirebase(final LatLng location) {
+    void asyncSendLocationToFirebase(final LatLng location) {
+
         if (location != null && getFirebaseUser() != null) {
-            ReverseGeocoder reverseGeocoder = new ReverseGeocoder(mMainActivity, location);
 
-            // imposta il codice da eseguire una volta trovato l'indirizzo. In questo caso, invia
-            // la posizione a Firebase.
-            reverseGeocoder.setOnCompleteCallback(new ReverseGeocoder.AsyncCallback() {
-                @Override
-                public void onComplete(String result) {
-                    // Quando il task ha completato al traduzione ad indirizzo carico su firebase
-                    if(result != null)
-                    {
-                        HashMap<String, Object> posto = new HashMap<>();
-                        posto.put("latitudine", location.latitude);
-                        posto.put("longitudine", location.longitude);
-                        posto.put("street_address", result);
-                        mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
-
-                    } else {
-                        mMainActivity.creaToast(R.string.errore_invio_posizione);
-                    }
-                }
-            });
-            reverseGeocoder.execute();
+            AsyncInviaPosizione asyncInviaPosizioni = new AsyncInviaPosizione(mMainActivity, location,
+                    new AsyncInviaPosizione.SenderCallback() {
+                        @Override
+                        public void sendToFirebase(String address) {
+                            // imposta il codice da eseguire una volta trovato l'indirizzo.
+                            // In questo caso, invia la posizione a Firebase.
+                            HashMap<String, Object> posto = new HashMap<>();
+                            posto.put("latitudine", location.latitude);
+                            posto.put("longitudine", location.longitude);
+                            posto.put("street_address", address);
+                            mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
+                        }
+                    });
+            asyncInviaPosizioni.execute();
         } else {
             Log.d(TAG, "Errore inaspettato nell'invio della posizione");
         }

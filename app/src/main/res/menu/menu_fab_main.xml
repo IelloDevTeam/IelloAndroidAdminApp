@@ -12,4 +12,9 @@
         android:id="@+id/action_send_marker"
         android:icon="@drawable/ic_location_on_black_48px"
         android:title="@string/invia_markers"/>
+
+    <item
+        android:id="@+id/action_parcheggi_presenti"
+        android:icon="@drawable/ic_history_black_24dp"
+        android:title="@string/mostra_parcheggi_gi_caricati_in_zona"/>
 </menu>
