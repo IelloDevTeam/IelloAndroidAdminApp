@@ -1,9 +1,11 @@
 package com.example.andrea.posizione.UI.utilities;
 
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 
 import com.example.andrea.posizione.R;
 import com.example.andrea.posizione.UI.MainActivity;
@@ -158,7 +160,7 @@ public class MappaGoogle implements OnMapReadyCallback,
      * invio. Altrimenti, lo elimina
      */
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onMarkerClick(final Marker marker) {
         // distingui la tipologia di marker
         String tipologia = tipologiaMarker(marker);
 
@@ -176,7 +178,25 @@ public class MappaGoogle implements OnMapReadyCallback,
             }
 
             case M_PRESENTE: {
-                // todo cancella marker dal database firebase
+                    AlertDialog.Builder alertElimina = new AlertDialog.Builder(mMainActivity);
+
+                    alertElimina.setTitle(R.string.title_elimina);
+                    alertElimina.setMessage(R.string.desc_elimina);
+                    alertElimina.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            mMainActivity.getFireHandler().cancellaPosto(marker);
+                            mMainActivity.creaToast(R.string.posto_eliminato);
+                            AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(mMainActivity,
+                                    getPosizioneAttualeMappa());
+                            adp.execute();
+                        }
+                    });
+                alertElimina.setNegativeButton(R.string.no, null);
+
+                    AlertDialog alert = alertElimina.create();
+                    alert.show();
+
                 break;
             }
         }
@@ -187,7 +207,7 @@ public class MappaGoogle implements OnMapReadyCallback,
         // serve a gestire il comportamento di default della mappa:
         // - return true: non mostrare animazione predefinita google.
         // - return false: mostrala.
-        return tipologia.equals(M_PROVVISORIO) || tipologia.equals(M_INVIARE);
+        return true;
     }
 
 

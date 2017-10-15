@@ -215,8 +215,6 @@ public class MainActivity extends AppCompatActivity {
         alertHelp.setTitle("Aiuto");
         alertHelp.setIcon(R.drawable.ic_help_black);
         alertHelp.setMessage(getString(R.string.help));
-
-        // button positivo: elimina partita dal singleton e aggiorna lista
         alertHelp.setPositiveButton("Fantastico!", null);
 
         AlertDialog alert = alertHelp.create();

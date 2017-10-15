@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.andrea.posizione.R;
 import com.example.andrea.posizione.UI.MainActivity;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -110,6 +111,13 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
             asyncInviaPosizioni.execute();
         } else {
             Log.d(TAG, "Errore inaspettato nell'invio della posizione");
+        }
+    }
+
+
+    void cancellaPosto(Marker marker) {
+        if(HelperRete.isNetworkAvailable(mMainActivity)) {
+            // todo cancella posizione dal DB Firebase
         }
     }
 }

@@ -37,5 +37,10 @@
     <string name="no_parcheggi">Nessun parcheggio nelle vicinanze.</string>
     <string name="no_indirizzo">Impossibile reperire l\'indirizzo.</string>
     <string name="mostra_parcheggi_gi_caricati_in_zona">Mostra parcheggi già caricati in zona</string>
+    <string name="posto_eliminato">Posteggio eliminato dal database.</string>
+    <string name="no">No</string>
+    <string name="si">Si, elimina</string>
+    <string name="title_elimina">Elimina posizione dal database</string>
+    <string name="desc_elimina">Vuoi davvero eliminare questa posizione dal database?</string>
 
 </resources>
