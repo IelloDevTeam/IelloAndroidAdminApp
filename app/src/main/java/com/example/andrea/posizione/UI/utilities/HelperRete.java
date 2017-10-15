@@ -21,12 +21,12 @@ import java.util.concurrent.TimeoutException;
  * Fornisce metodi utili per interagire con la rete ed ottenere lo stato di questa.
  */
 
-public class HelperRete {
+class HelperRete {
 
     /**
      * Determina se internet è attivo
      */
-    public static boolean isNetworkAvailable(Context c) {
+    static boolean isNetworkAvailable(Context c) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -38,7 +38,7 @@ public class HelperRete {
      * Effettua una web request sincrona tramite Volley API, restituendo in risposta
      * l'oggetto JSON scaricato.
      */
-    public static JSONObject volleySyncRequest(Context c, String url) {
+    static JSONObject volleySyncRequest(Context c, String url) {
 
         // configurazione della webRequest
         RequestFuture<JSONObject> future = RequestFuture.newFuture();

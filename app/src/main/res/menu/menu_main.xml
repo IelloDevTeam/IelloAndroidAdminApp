@@ -8,6 +8,6 @@
         android:id="@+id/action_help"
         android:title="@string/help_titolo"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_help_outline_white_24dp"
+        android:icon="@drawable/ic_help_white"
         app:showAsAction="ifRoom"/>
 </menu>

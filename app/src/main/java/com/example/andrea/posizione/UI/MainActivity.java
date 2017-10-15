@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder alertHelp = new AlertDialog.Builder(this);
 
         alertHelp.setTitle("Aiuto");
-        alertHelp.setIcon(R.drawable.ic_help_outline_black_24dp);
+        alertHelp.setIcon(R.drawable.ic_help_black);
         alertHelp.setMessage(getString(R.string.help));
 
         // button positivo: elimina partita dal singleton e aggiorna lista

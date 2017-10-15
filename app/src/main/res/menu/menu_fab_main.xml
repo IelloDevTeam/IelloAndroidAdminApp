@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_elimina_marker"
-        android:icon="@drawable/ic_location_off_white_24dp"
+        android:icon="@drawable/fab_elimina_markers"
         android:title="@string/elimina_markers"/>
     <item
         android:id="@+id/action_send_location"
-        android:icon="@drawable/ic_my_location_white_24px"
+        android:icon="@drawable/fab_invia_posizione"
         android:title="@string/invia_posizione" />
     <item
         android:id="@+id/action_send_marker"
-        android:icon="@drawable/ic_location_on_black_48px"
+        android:icon="@drawable/fab_invia_markers"
         android:title="@string/invia_markers"/>
 
     <item
         android:id="@+id/action_parcheggi_presenti"
-        android:icon="@drawable/ic_history_black_24dp"
+        android:icon="@drawable/fab_marker_presenti"
         android:title="@string/mostra_parcheggi_gi_caricati_in_zona"/>
 </menu>

@@ -18,7 +18,7 @@
         imprecisione.
     </string>
     <string name="hint_edit_indirizzo">Cerca un indirizzo&#8230;</string>
-    <string name="elimina_markers">Elimina marker dalla mappa</string>
+    <string name="elimina_markers">Elimina tutti i marker dalla mappa</string>
     <string name="invia_posizione">Invia posizione attuale</string>
     <string name="invia_markers">Invia i marker selezionati</string>
     <string name="help_titolo">Aiuto</string>
@@ -27,7 +27,7 @@
     <string name="markers_eliminati">Tutti i markers eliminati.</string>
     <string name="attivare_gps">Attiva la geolocalizzazione.</string>
     <string name="posizione_inviata">Posizione utente inviata.</string>
-    <string name="posizione_markers_inviata">Invio posizione markers&#8230;</string>
+    <string name="posizione_markers_inviata">Posizione markers inviata.</string>
     <string name="markers_non_selezionati">Nessun marker selezionato.</string>
     <string name="marker_selezionati">marker da caricare</string>
     <string name="errore_invio_posizione">Errore nell\'invio della posizione al DB.</string>

@@ -104,6 +104,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
                             posto.put("longitudine", location.longitude);
                             posto.put("street_address", address);
                             mFirebaseDB.getReference("/" + TAG_POSTI).push().setValue(posto);
+
                         }
                     });
             asyncInviaPosizioni.execute();

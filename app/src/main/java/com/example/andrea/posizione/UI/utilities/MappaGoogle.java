@@ -175,19 +175,19 @@ public class MappaGoogle implements OnMapReadyCallback,
                 break;
             }
 
-            default: {
-                // non fare niente
+            case M_PRESENTE: {
+                // todo cancella marker dal database firebase
+                break;
             }
         }
 
         mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
         mMainActivity.modificaTxtMarkerInSospeso(false);
 
-        // serve a gestire il comportamento di default della mappa
-        if (tipologia.equals(M_PROVVISORIO) || tipologia.equals(M_INVIARE))
-            return true;
-        else
-            return false;
+        // serve a gestire il comportamento di default della mappa:
+        // - return true: non mostrare animazione predefinita google.
+        // - return false: mostrala.
+        return tipologia.equals(M_PROVVISORIO) || tipologia.equals(M_INVIARE);
     }
 
 
@@ -223,6 +223,11 @@ public class MappaGoogle implements OnMapReadyCallback,
     }
 
 
+    /**
+     * Metodo per porre un marker provvisorio nella mappa. Il metodo viene invocato quando viene
+     * premuto un punto sulla mappa, o quando viene spostata la mappa stessa tramite ricerca per
+     * indirizzo.
+     */
     void poniMarkerProvvisorio(LatLng posizione) {
         if (mMarkerProvvisorio != null)
             mMarkerProvvisorio.remove();
@@ -250,10 +255,11 @@ public class MappaGoogle implements OnMapReadyCallback,
         mMainActivity.creaToast(R.string.markers_eliminati);
     }
 
+
     /**
      * Elimina i markers 'verdi' e i loro riferimenti dalla mappa
      */
-    public void eliminaMarkersVerdi() {
+    void eliminaMarkersVerdi() {
         for (Marker m : mMarkerListPresenti)
             m.remove();
         mMarkerListPresenti.clear();
@@ -276,7 +282,6 @@ public class MappaGoogle implements OnMapReadyCallback,
      */
     public void inviaPosizioneGeolocalizzata() {
         if(mGeoPermessoDisponibile) {
-            mMainActivity.getProgHandler().setSendPos(true);
 
             try {
                 mLocationProvider
@@ -293,12 +298,10 @@ public class MappaGoogle implements OnMapReadyCallback,
                                     mMainActivity.creaToast(R.string.attivare_gps);
                                 }
 
-                                mMainActivity.getProgHandler().setSendPos(false);
                             }
                         });
             } catch (SecurityException ex) {
                 ex.printStackTrace();
-                mMainActivity.getProgHandler().setSendPos(false);
             }
         }
     }
@@ -309,7 +312,6 @@ public class MappaGoogle implements OnMapReadyCallback,
      */
     public void inviaPosizioneMarkers() {
         if(mMarkerListDaInviare.size() > 0) {
-            mMainActivity.getProgHandler().setSendPos(true);
 
             for(Marker m : mMarkerListDaInviare) {
                 mMainActivity.getFireHandler().asyncSendLocationToFirebase(m.getPosition());
@@ -317,10 +319,15 @@ public class MappaGoogle implements OnMapReadyCallback,
             }
             mMarkerListDaInviare.clear();
 
+            if(mMarkerProvvisorio != null)
+                mMarkerProvvisorio.remove();
+            mMarkerProvvisorio = null;
+
             mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
-            mMainActivity.modificaTxtMarkerInSospeso(false);
+
             mMainActivity.creaSnackbar(R.string.posizione_markers_inviata);
-            mMainActivity.getProgHandler().setSendPos(false);
+            mMainActivity.modificaTxtMarkerInSospeso(false);
+
         } else {
             mMainActivity.creaToast(R.string.markers_non_selezionati);
         }
@@ -331,7 +338,7 @@ public class MappaGoogle implements OnMapReadyCallback,
     /**
      * Imposta un marker per ogni parcheggio già presente in zona
      */
-    public void settaMarkersGiaPresenti() {
+    void settaMarkersGiaPresenti() {
         // rimuovi tutti i markers
         for(Marker m : mMarkerListPresenti)
             m.remove();
