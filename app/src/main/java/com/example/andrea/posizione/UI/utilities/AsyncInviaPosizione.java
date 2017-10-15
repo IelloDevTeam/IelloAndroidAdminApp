@@ -26,6 +26,10 @@ public class AsyncInviaPosizione extends AsyncTask<Void, Void, String> {
     private LatLng mCoordRicerca;
     private SenderCallback mSender;
 
+    // costanti return
+    private static final String ERRORE = "ERRORE";
+    private static final String NO_INTERNET = "NO_INTERNET";
+
 
 
     public interface SenderCallback {
@@ -66,18 +70,30 @@ public class AsyncInviaPosizione extends AsyncTask<Void, Void, String> {
                     e.printStackTrace();
                 }
             }
+            return ERRORE;
+
+        } else {
+            return NO_INTERNET;
         }
-        return null;
     }
 
 
 
     @Override
     protected void onPostExecute(String address) {
-        if(address != null && mSender != null)
-            mSender.sendToFirebase(address);
-
-         else
-            mMainActivity.creaToast(R.string.errore_invio_posizione);
+        switch (address) {
+            case NO_INTERNET: {
+                mMainActivity.creaToast(R.string.no_internet);
+                break;
+            }
+            case ERRORE: {
+                mMainActivity.creaToast(R.string.errore_invio_posizione);
+                break;
+            }
+            default: {
+                mSender.sendToFirebase(address);
+                break;
+            }
+        }
     }
 }

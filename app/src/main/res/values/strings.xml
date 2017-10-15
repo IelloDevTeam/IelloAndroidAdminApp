@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Iello Admin</string>
+    <string name="help_title">Aiuto</string>
     <string name="help">Iello Admin è l\'applicazione Android che consente di popolare il
         databese Firebase di Project Iello, dove vengono memorizzati i posteggi per disabili
         utilizzati da Iello API e Iello App Android.\n\nQuest\'app è pensata per essere utilizzata
@@ -18,9 +19,10 @@
         imprecisione.
     </string>
     <string name="hint_edit_indirizzo">Cerca un indirizzo&#8230;</string>
-    <string name="elimina_markers">Elimina tutti i marker dalla mappa</string>
+    <string name="elimina_markers">Elimina i marker da caricare dalla mappa</string>
     <string name="invia_posizione">Invia posizione attuale</string>
     <string name="invia_markers">Invia i marker selezionati</string>
+    <string name="mostra_parcheggi_gi_caricati_in_zona">Mostra parcheggi in zona</string>
     <string name="help_titolo">Aiuto</string>
     <string name="authentication_fail">Non sei connesso al DB. Non puoi effettuare operazioni.</string>
     <string name="authentication_success">Connesso al DB Firebase! L\'app è pronta a inviare posizioni.</string>
@@ -36,11 +38,14 @@
     <string name="no_internet">Internet non disponibile.</string>
     <string name="no_parcheggi">Nessun parcheggio nelle vicinanze.</string>
     <string name="no_indirizzo">Impossibile reperire l\'indirizzo.</string>
-    <string name="mostra_parcheggi_gi_caricati_in_zona">Mostra parcheggi già caricati in zona</string>
     <string name="posto_eliminato">Posteggio eliminato dal database.</string>
     <string name="no">No</string>
     <string name="si">Si, elimina</string>
     <string name="title_elimina">Elimina posizione dal database</string>
     <string name="desc_elimina">Vuoi davvero eliminare questa posizione dal database?</string>
+    <string name="fantastico">Fantastico!</string>
+    <string name="invia_geolocalizzaz_desc">Sicuro di voler inviare al database la tua posizione ricavata tramite GPS? Ricorda che la geolocalizzazione da smartphone è molto imprecisa.</string>
+    <string name="si_invia">Si, invia</string>
+    <string name="desc_parcheggi">Mostrati in verde i parcheggi già presenti nel DB intorno a questa posizione, nell\'arco di 500m.</string>
 
 </resources>

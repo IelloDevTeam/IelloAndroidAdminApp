@@ -62,6 +62,7 @@ public class FirebaseHandler implements OnCompleteListener<AuthResult>{
                 mMainActivity.creaToast(R.string.authentication_success);
 
                 // aggiorna l'interfaccia rendendo disponibili le varie azioni
+                mMainActivity.getMappa().attivaFunzioniMappa();
                 mMainActivity.showFab();
 
             } else {

@@ -132,8 +132,7 @@ public class MappaGoogle implements OnMapReadyCallback,
         mMappa.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         mMappa.getUiSettings().setMyLocationButtonEnabled(true);
         mMappa.setMinZoomPreference(5);
-        mMappa.setOnMapClickListener(this);
-        mMappa.setOnMarkerClickListener(this);
+
         mMappa.moveCamera(CameraUpdateFactory.newLatLngZoom(COORD_INIZIALI, 15.0f));
 
         if (mGeoPermessoDisponibile)
@@ -142,6 +141,12 @@ public class MappaGoogle implements OnMapReadyCallback,
             } catch (SecurityException ex) {
                 ex.printStackTrace();
             }
+    }
+
+
+    void attivaFunzioniMappa() {
+        mMappa.setOnMapClickListener(this);
+        mMappa.setOnMarkerClickListener(this);
     }
 
 
@@ -312,7 +317,7 @@ public class MappaGoogle implements OnMapReadyCallback,
                                 if (location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                     mMainActivity.getFireHandler().asyncSendLocationToFirebase(latLng);
-                                    mMainActivity.creaSnackbar(R.string.posizione_inviata);
+                                    mMainActivity.creaToast(R.string.posizione_inviata);
 
                                 } else {
                                     mMainActivity.creaToast(R.string.attivare_gps);
@@ -345,7 +350,7 @@ public class MappaGoogle implements OnMapReadyCallback,
 
             mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
 
-            mMainActivity.creaSnackbar(R.string.posizione_markers_inviata);
+            mMainActivity.creaToast(R.string.posizione_markers_inviata);
             mMainActivity.modificaTxtMarkerInSospeso(false);
 
         } else {

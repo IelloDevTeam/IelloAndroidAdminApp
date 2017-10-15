@@ -14,9 +14,15 @@ import org.json.JSONObject;
  * Created by riccardomaldini on 05/10/17.
  * Sposta la mappa a seconda dell'indirizzo selezionato dall'utente.
  */
-public class AsyncRicercaPerIndirizzo extends AsyncTask<Void, LatLng, LatLng> {
+public class AsyncRicercaPerIndirizzo extends AsyncTask<Void, String, String> {
     private String mQuery;
     private MainActivity mMainActivity;
+    private LatLng mCoordinateCercate;
+
+    // costanti di return
+    private static final String RICERCA_COMPLETATA = "RICERCA_COMPLETATA";
+    private static final String NO_INTERNET = "NO_INTERNET";
+
 
     public AsyncRicercaPerIndirizzo(MainActivity a, String query) {
         mMainActivity = a;
@@ -30,7 +36,7 @@ public class AsyncRicercaPerIndirizzo extends AsyncTask<Void, LatLng, LatLng> {
     }
 
     @Override
-    protected LatLng doInBackground(Void... voids) {
+    protected String doInBackground(Void... voids) {
         if(HelperRete.isNetworkAvailable(mMainActivity)) {
 
             String queryFormattata = mQuery.replaceAll(" ", "+" + "");
@@ -52,11 +58,15 @@ public class AsyncRicercaPerIndirizzo extends AsyncTask<Void, LatLng, LatLng> {
                             .getJSONObject("geometry").getJSONObject("location")
                             .getDouble("lat");
 
-                    return new LatLng(lat, lng);
+                    mCoordinateCercate = new LatLng(lat, lng);
+
+                    return RICERCA_COMPLETATA;
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else {
+            return NO_INTERNET;
         }
 
         return null;
@@ -64,18 +74,29 @@ public class AsyncRicercaPerIndirizzo extends AsyncTask<Void, LatLng, LatLng> {
 
 
     @Override
-    protected void onPostExecute(LatLng response) {
+    protected void onPostExecute(String result) {
 
-       if (response != null) {
-           mMainActivity.getMappa().muoviMappaConAnimazione(response);
-           mMainActivity.getMappa().poniMarkerProvvisorio(response);
-           AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(mMainActivity, response);
-           adp.execute();
+        switch(result) {
+            case RICERCA_COMPLETATA: {
+                    mMainActivity.getMappa().muoviMappaConAnimazione(mCoordinateCercate);
+                    mMainActivity.getMappa().poniMarkerProvvisorio(mCoordinateCercate);
+                    AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(mMainActivity, mCoordinateCercate);
+                    adp.execute();
+                break;
+            }
 
-       } else {
-           mMainActivity.creaToast(R.string.no_indirizzo);
-       }
+            case NO_INTERNET: {
+                mMainActivity.creaToast(R.string.no_internet);
+                break;
+            }
 
+            default: {
+                mMainActivity.creaToast(R.string.no_indirizzo);
+                break;
+            }
+        }
+
+        // nasconde la barra di ricerca se necessario
         mMainActivity.getProgHandler().setSearchingInd(false);
     }
 }

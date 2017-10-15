@@ -1,5 +1,7 @@
 package com.example.andrea.posizione.UI;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,7 +96,19 @@ public class MainActivity extends AppCompatActivity {
                 switch(menuItem.getItemId()) {
                     case R.id.action_send_location: {
                         // invio della propria posizione al DB Firebase
-                        mMappa.inviaPosizioneGeolocalizzata();
+                        AlertDialog.Builder alertInvia = new AlertDialog.Builder(MainActivity.this);
+                        alertInvia.setMessage(R.string.invia_geolocalizzaz_desc);
+                        alertInvia.setPositiveButton(R.string.si_invia, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mMappa.inviaPosizioneGeolocalizzata();
+                            }
+                        });
+                        alertInvia.setNegativeButton(R.string.no, null);
+
+                        AlertDialog alert = alertInvia.create();
+                        alert.show();
+
                         break;
                     }
 
@@ -137,6 +152,13 @@ public class MainActivity extends AppCompatActivity {
                     AsyncRicercaPerIndirizzo searchAddr
                             = new AsyncRicercaPerIndirizzo(MainActivity.this, query);
                     searchAddr.execute();
+
+                    // nasconde la tastiera
+                    View viewC = getCurrentFocus();
+                    if (viewC != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(viewC.getWindowToken(), 0);
+                    }
                     return true;
                 }
                 return false;
@@ -151,6 +173,13 @@ public class MainActivity extends AppCompatActivity {
                 AsyncRicercaPerIndirizzo searchAddr
                         = new AsyncRicercaPerIndirizzo(MainActivity.this, query);
                 searchAddr.execute();
+
+                // nasconde la tastiera
+                View viewC = getCurrentFocus();
+                if (viewC != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(viewC.getWindowToken(), 0);
+                }
             }
         });
 
@@ -198,7 +227,15 @@ public class MainActivity extends AppCompatActivity {
         // qua vanno gestiti i click sulle voci di menu
         switch(item.getItemId()) {
             case R.id.action_help:
-                avviaDialogHelp();
+                AlertDialog.Builder alertHelp = new AlertDialog.Builder(this);
+
+                alertHelp.setTitle(R.string.help_title);
+                alertHelp.setIcon(R.drawable.ic_help_black);
+                alertHelp.setMessage(getString(R.string.help));
+                alertHelp.setPositiveButton(R.string.fantastico, null);
+
+                AlertDialog alert = alertHelp.create();
+                alert.show();
                 break;
         }
 
@@ -206,21 +243,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    private void avviaDialogHelp() {
-
-        AlertDialog.Builder alertHelp = new AlertDialog.Builder(this);
-
-        alertHelp.setTitle("Aiuto");
-        alertHelp.setIcon(R.drawable.ic_help_black);
-        alertHelp.setMessage(getString(R.string.help));
-        alertHelp.setPositiveButton("Fantastico!", null);
-
-        AlertDialog alert = alertHelp.create();
-        alert.show();
-
-    }
 
 
     /*
@@ -244,11 +266,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void creaToast(int resTesto) {
         Toast.makeText(this, resTesto, Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void creaSnackbar(int resTesto) {
-        Snackbar.make(findViewById(R.id.coordinator), resTesto, Snackbar.LENGTH_LONG).show();
     }
 
 

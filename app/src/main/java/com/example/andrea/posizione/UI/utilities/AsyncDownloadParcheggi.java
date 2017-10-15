@@ -85,6 +85,7 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
             switch (result) {
                 case RICERCA_COMPLETATA:
                     mMainActivity.getMappa().settaMarkersGiaPresenti();
+                    mMainActivity.creaToast(R.string.desc_parcheggi);
                     break;
 
                 case COMPLETATA_NO_RIS:
