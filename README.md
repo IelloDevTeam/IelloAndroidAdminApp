@@ -52,3 +52,16 @@ TO DO: collegamento all'API
 ### Note finali ###
 Nell'applicazione, per agevolarne l'utilizzo, è stata inserita una legenda con i colori dei marker e i rispettivi significati. Inoltre, in altro a destra dello schermo, 
 è stata posta una icona che rimanda alle istruzioni di base. 
+
+### Licenza ###
+
+Copyright (C) 2017 TeamPiattaforme
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except 
+in compliance with the License. You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+### Contatti & Credits ###
+
+App realizzata come parte di un progetto di esame (PDGT) 
+da Riccardo Maldini, Andrea Petreti, Elia Trufelli e Alessia Ventani. Se vuoi contattarci, scrivi un e-mail a riccardo.maldini@gmail.com
