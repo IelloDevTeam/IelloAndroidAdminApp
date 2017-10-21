@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,6 +135,9 @@ public class MappaGoogle implements OnMapReadyCallback,
         mMappa.getUiSettings().setMyLocationButtonEnabled(true);
         mMappa.setMinZoomPreference(5);
 
+        mMappa.setOnMapClickListener(this);
+        mMappa.setOnMarkerClickListener(this);
+
         mMappa.moveCamera(CameraUpdateFactory.newLatLngZoom(COORD_INIZIALI, 15.0f));
 
         if (mGeoPermessoDisponibile)
@@ -141,12 +146,6 @@ public class MappaGoogle implements OnMapReadyCallback,
             } catch (SecurityException ex) {
                 ex.printStackTrace();
             }
-    }
-
-
-    void attivaFunzioniMappa() {
-        mMappa.setOnMapClickListener(this);
-        mMappa.setOnMarkerClickListener(this);
     }
 
 
@@ -190,11 +189,18 @@ public class MappaGoogle implements OnMapReadyCallback,
                     alertElimina.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            mMainActivity.getFireHandler().cancellaPosto(marker);
-                            mMainActivity.creaToast(R.string.posto_eliminato);
-                            AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(mMainActivity,
-                                    getPosizioneAttualeMappa());
-                            adp.execute();
+
+                            String parkId = (String) marker.getTag();
+                            mMainActivity.getAPIHandler().deleteLocation(parkId, new APIHandler.APICallback() {
+                                @Override
+                                public void OnResult(boolean isError, JSONObject jsonObject) {
+                                    if(!isError)
+                                    {
+                                        mMainActivity.creaToast(R.string.posto_eliminato);
+                                        marker.remove();
+                                    }
+                                }
+                            });
                         }
                     });
                 alertElimina.setNegativeButton(R.string.no, null);
@@ -316,9 +322,16 @@ public class MappaGoogle implements OnMapReadyCallback,
                             public void onSuccess(Location location) {
                                 if (location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    mMainActivity.getFireHandler().asyncSendLocationToFirebase(latLng);
-                                    mMainActivity.creaToast(R.string.posizione_inviata);
-
+                                    // TODO: Modificare invio posizione
+                                    mMainActivity.getAPIHandler().sendLocation(latLng, new APIHandler.APICallback() {
+                                        @Override
+                                        public void OnResult(boolean isError, JSONObject jsonObject) {
+                                            if(isError)
+                                                mMainActivity.creaToast(R.string.errore_invio_posizione);
+                                            else
+                                                mMainActivity.creaToast(R.string.posizione_inviata);
+                                        }
+                                    });
                                 } else {
                                     mMainActivity.creaToast(R.string.attivare_gps);
                                 }
@@ -338,9 +351,14 @@ public class MappaGoogle implements OnMapReadyCallback,
     public void inviaPosizioneMarkers() {
         if(mMarkerListDaInviare.size() > 0) {
 
-            for(Marker m : mMarkerListDaInviare) {
-                mMainActivity.getFireHandler().asyncSendLocationToFirebase(m.getPosition());
-                m.remove();
+            for(final Marker m : mMarkerListDaInviare) {
+                mMainActivity.getAPIHandler().sendLocation(m.getPosition(), new APIHandler.APICallback() {
+                    @Override
+                    public void OnResult(boolean isError, JSONObject jsonObject) {
+                        if(!isError)
+                            m.remove();
+                    }
+                });
             }
             mMarkerListDaInviare.clear();
 
@@ -378,6 +396,9 @@ public class MappaGoogle implements OnMapReadyCallback,
                     .title(p.getIndirizzo())
                     .icon(BitmapDescriptorFactory.defaultMarker(138)));
 
+            // Associo al marker un tag che corrisponde all'id del parcheggio in questo modo posso
+            // poi eliminarlo direttamente
+            marker.setTag(p.getID());
 
             mMarkerListPresenti.add(marker);
         }

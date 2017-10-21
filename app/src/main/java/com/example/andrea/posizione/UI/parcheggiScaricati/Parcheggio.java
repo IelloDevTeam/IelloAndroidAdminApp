@@ -13,6 +13,9 @@ import org.json.JSONObject;
 
 public class Parcheggio {
 
+    // id univoco del parcheggio
+    private String mId;
+
     // indirizzo del parcheggio, calcolato tramite reverse geocoding
     private  String mIndirizzo;
 
@@ -26,16 +29,19 @@ public class Parcheggio {
      * @throws JSONException dovuta alla conversione dell'oggetto JSON in dati del parcheggio
      */
     public Parcheggio(JSONObject jParcheggio) throws JSONException {
-        double lat = jParcheggio.getDouble("latitudine");
-        double lng = jParcheggio.getDouble("longitudine");
+        mId = jParcheggio.getString("id");
 
-        mCoordinate = new LatLng(lat, lng);
+        mCoordinate = new LatLng(jParcheggio.getDouble("latitudine"), jParcheggio.getDouble("longitudine"));
         if(jParcheggio.has("street_address"))
             mIndirizzo = jParcheggio.getString("street_address");
         else
             mIndirizzo = "Ind. non disponibile";
     }
 
+    public String getID()
+    {
+        return mId;
+    }
 
     public LatLng getCoordinate() {
         return mCoordinate;

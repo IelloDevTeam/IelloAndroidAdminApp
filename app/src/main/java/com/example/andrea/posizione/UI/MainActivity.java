@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +23,7 @@ import android.widget.Toast;
 
 import com.example.andrea.posizione.UI.utilities.AsyncDownloadParcheggi;
 import com.example.andrea.posizione.UI.utilities.AsyncRicercaPerIndirizzo;
-import com.example.andrea.posizione.UI.utilities.FirebaseHandler;
+import com.example.andrea.posizione.UI.utilities.APIHandler;
 import com.example.andrea.posizione.UI.utilities.MappaGoogle;
 import com.example.andrea.posizione.R;
 import com.example.andrea.posizione.UI.utilities.ProgressBarHandler;
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private FabSpeedDial mMultiFabButton;
 
     // istanza del gestore del collegamento a DB Firebase
-    private FirebaseHandler mFirebaseHandler;
+    private APIHandler mAPIHandler;
 
     // istanza del gestore della mappa
     private MappaGoogle mMappa;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         mMappa = new MappaGoogle(this);
 
         // inizializza gestore del collegamento Firebase
-        mFirebaseHandler = new FirebaseHandler(this);
+        mAPIHandler = new APIHandler(this);
 
 
         // inizializza i fab button
@@ -194,18 +193,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        if(mFirebaseHandler.getFirebaseUser() == null) {
-            hideFab();
-        }
-
-    }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -253,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void showFab() {
         if(mMultiFabButton != null)
-        mMultiFabButton.show();
+            mMultiFabButton.show();
     }
 
 
@@ -299,8 +286,8 @@ public class MainActivity extends AppCompatActivity {
         return mMappa;
     }
 
-    public FirebaseHandler getFireHandler() {
-        return mFirebaseHandler;
+    public APIHandler getAPIHandler() {
+        return mAPIHandler;
     }
 
 }

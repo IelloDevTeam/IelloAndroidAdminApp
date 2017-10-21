@@ -110,9 +110,9 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
         ElencoParcheggi.getInstance().getListParcheggi().clear();
 
         // creazione URL
-        String url = "http://cloudpi.webhop.me:4000/parking" +
-                "?lat="    + mCoordRicerca.latitude +
-                "&lon="   + mCoordRicerca.longitude;
+        String url = "http://192.168.1.110:4000/iello/v1/parking" +
+                "?latitude="    + mCoordRicerca.latitude +
+                "&longitude="   + mCoordRicerca.longitude;
                 //"&radius=" + mRange;
 
         // interrogazione dell'Api
