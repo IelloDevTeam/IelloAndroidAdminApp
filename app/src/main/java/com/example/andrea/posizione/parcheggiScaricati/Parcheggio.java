@@ -31,7 +31,7 @@ public class Parcheggio {
     public Parcheggio(JSONObject jParcheggio) throws JSONException {
         mId = jParcheggio.getString("id");
 
-        mCoordinate = new LatLng(jParcheggio.getDouble("latitudine"), jParcheggio.getDouble("longitudine"));
+        mCoordinate = new LatLng(jParcheggio.getDouble("latitude"), jParcheggio.getDouble("longitude"));
         if(jParcheggio.has("street_address"))
             mIndirizzo = jParcheggio.getString("street_address");
         else
