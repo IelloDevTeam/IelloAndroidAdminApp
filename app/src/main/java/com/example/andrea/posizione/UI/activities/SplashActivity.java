@@ -1,4 +1,4 @@
-package com.example.andrea.posizione.UI;
+package com.example.andrea.posizione.UI.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

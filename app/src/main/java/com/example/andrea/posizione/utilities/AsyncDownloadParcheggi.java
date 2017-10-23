@@ -1,11 +1,11 @@
-package com.example.andrea.posizione.UI.utilities;
+package com.example.andrea.posizione.utilities;
 
 import android.os.AsyncTask;
 
 import com.example.andrea.posizione.R;
-import com.example.andrea.posizione.UI.MainActivity;
-import com.example.andrea.posizione.UI.parcheggiScaricati.ElencoParcheggi;
-import com.example.andrea.posizione.UI.parcheggiScaricati.Parcheggio;
+import com.example.andrea.posizione.UI.activities.MainActivity;
+import com.example.andrea.posizione.parcheggiScaricati.ElencoParcheggi;
+import com.example.andrea.posizione.parcheggiScaricati.Parcheggio;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -101,6 +101,7 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
     }
 
 
+    // TODO: Spostare richiesta api su APIHandler, fare cache dei dati ottenuti con volley.
     /**
      * Il metodo interroga l'API con dati relativi alle coordinate e al raggio di ricerca, quindi
      * restituisce il risultato in modo sincrono.

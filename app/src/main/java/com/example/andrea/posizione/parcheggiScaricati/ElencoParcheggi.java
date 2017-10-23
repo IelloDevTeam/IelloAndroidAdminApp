@@ -1,4 +1,4 @@
-package com.example.andrea.posizione.UI.parcheggiScaricati;
+package com.example.andrea.posizione.parcheggiScaricati;
 
 import java.util.ArrayList;
 import java.util.List;

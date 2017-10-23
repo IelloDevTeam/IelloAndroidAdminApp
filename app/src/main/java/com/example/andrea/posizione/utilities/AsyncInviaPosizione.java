@@ -1,16 +1,14 @@
-package com.example.andrea.posizione.UI.utilities;
+package com.example.andrea.posizione.utilities;
 
 import android.os.AsyncTask;
 
 import com.example.andrea.posizione.R;
-import com.example.andrea.posizione.UI.MainActivity;
+import com.example.andrea.posizione.UI.activities.MainActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * Created by andrea on 11/10/17.

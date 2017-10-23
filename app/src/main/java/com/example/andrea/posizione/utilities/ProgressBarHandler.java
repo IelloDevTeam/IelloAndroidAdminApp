@@ -1,10 +1,10 @@
-package com.example.andrea.posizione.UI.utilities;
+package com.example.andrea.posizione.utilities;
 
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.andrea.posizione.R;
-import com.example.andrea.posizione.UI.MainActivity;
+import com.example.andrea.posizione.UI.activities.MainActivity;
 
 /**
  * Created by riccardomaldini on 15/10/17.

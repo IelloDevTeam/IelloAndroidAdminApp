@@ -1,9 +1,9 @@
-package com.example.andrea.posizione.UI.utilities;
+package com.example.andrea.posizione.utilities;
 
 import android.os.AsyncTask;
 import android.util.Log;
 import com.example.andrea.posizione.R;
-import com.example.andrea.posizione.UI.MainActivity;
+import com.example.andrea.posizione.UI.activities.MainActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;

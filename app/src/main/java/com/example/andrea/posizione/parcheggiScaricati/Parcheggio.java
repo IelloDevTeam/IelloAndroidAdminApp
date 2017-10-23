@@ -1,4 +1,4 @@
-package com.example.andrea.posizione.UI.parcheggiScaricati;
+package com.example.andrea.posizione.parcheggiScaricati;
 
 import com.google.android.gms.maps.model.LatLng;
 

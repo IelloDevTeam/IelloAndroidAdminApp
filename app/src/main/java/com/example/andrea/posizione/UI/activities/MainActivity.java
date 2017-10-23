@@ -1,4 +1,4 @@
-package com.example.andrea.posizione.UI;
+package com.example.andrea.posizione.UI.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -21,12 +21,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.andrea.posizione.UI.utilities.AsyncDownloadParcheggi;
-import com.example.andrea.posizione.UI.utilities.AsyncRicercaPerIndirizzo;
-import com.example.andrea.posizione.UI.utilities.APIHandler;
-import com.example.andrea.posizione.UI.utilities.MappaGoogle;
+import com.example.andrea.posizione.UI.dialogs.DialogAPIKey;
+import com.example.andrea.posizione.utilities.AsyncDownloadParcheggi;
+import com.example.andrea.posizione.utilities.AsyncRicercaPerIndirizzo;
+import com.example.andrea.posizione.utilities.APIHandler;
+import com.example.andrea.posizione.utilities.MappaGoogle;
 import com.example.andrea.posizione.R;
-import com.example.andrea.posizione.UI.utilities.ProgressBarHandler;
+import com.example.andrea.posizione.utilities.ProgressBarHandler;
+import com.example.andrea.posizione.utilities.SharedPrefsHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
@@ -37,7 +39,7 @@ import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
  * Created by TeamPiattaforme on 25/09/17
  * L'activity principale dell'applicazione. Implementa le principali funzioni del programma.
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DialogAPIKey.DialogAPIKeyCallback{
 
     // riferimento a elementi d'interfaccia
     private EditText mEditIndirizzo;
@@ -57,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
     static {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,16 +182,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // avvia una prima ricerca dei markers presenti
-        AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(this, MappaGoogle.COORD_INIZIALI);
-        adp.execute();
+
+        // Verico presenza di api key
+        if(!SharedPrefsHelper.getInstance().isApiKeyRegistered(this))
+            requestApiKey();
+        else
+            startParkingDownload();
 
         // inizializza la casella di testo dei markers
         modificaTxtMarkerDaCaricare(0);
         modificaTxtMarkerInSospeso(false);
         modificaTxtMarkerPresenti(0);
+
+        showFab();
     }
 
+    private void startParkingDownload()
+    {
+        // avvia una prima ricerca dei markers presenti, se ho già inserito la api key.
+        AsyncDownloadParcheggi adp = new AsyncDownloadParcheggi(this, MappaGoogle.COORD_INIZIALI);
+        adp.execute();
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -224,6 +235,9 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog alert = alertHelp.create();
                 alert.show();
                 break;
+            case R.id.action_api_key:
+                requestApiKey();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -236,18 +250,9 @@ public class MainActivity extends AppCompatActivity {
      * Metodi per accedere a elementi dell'interfaccia dell'esterno della classe.
      */
 
-
-
     public void showFab() {
         if(mMultiFabButton != null)
             mMultiFabButton.show();
-    }
-
-
-    public void hideFab() {
-        if(mMultiFabButton != null) {
-            mMultiFabButton.hide();
-        }
     }
 
 
@@ -290,4 +295,17 @@ public class MainActivity extends AppCompatActivity {
         return mAPIHandler;
     }
 
+    /**
+     * Richiede inserimento di una chiave tramite dialog
+     */
+    private void requestApiKey()
+    {
+        DialogAPIKey.newInstance().show(getSupportFragmentManager(), null);
+    }
+
+    // Invocata dal dialog API key, quando viene inserita una nuova key valida.
+    @Override
+    public void APIKeyChange(String apiKey) {
+        startParkingDownload();
+    }
 }

@@ -182,6 +182,7 @@
             app:miniFabBackgroundTint="@android:color/white"
             app:miniFabDrawableTint="?attr/colorPrimaryDark"
             app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
+
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>
 

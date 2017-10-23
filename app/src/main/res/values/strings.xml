@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Iello Admin</string>
+    <string name="api_key_title">API Key</string>
     <string name="help_title">Aiuto</string>
     <string name="help">Iello Admin è l\'applicazione Android che consente di popolare il
         databese Firebase di Project Iello, dove vengono memorizzati i posteggi per disabili
@@ -32,7 +33,7 @@
     <string name="posizione_markers_inviata">Posizione markers inviata.</string>
     <string name="markers_non_selezionati">Nessun marker selezionato.</string>
     <string name="marker_selezionati">marker da caricare</string>
-    <string name="errore_invio_posizione">Errore nell\'invio della posizione al DB.</string>
+    <string name="errore_invio_posizione">Errore nell\'invio della posizione.</string>
     <string name="marker_in_sospeso">marker in sospeso</string>
     <string name="marker_gi_presenti_in_zona">marker già presenti in zona</string>
     <string name="no_internet">Internet non disponibile.</string>
@@ -47,5 +48,13 @@
     <string name="invia_geolocalizzaz_desc">Sicuro di voler inviare al database la tua posizione ricavata tramite GPS? Ricorda che la geolocalizzazione da smartphone è molto imprecisa.</string>
     <string name="si_invia">Si, invia</string>
     <string name="desc_parcheggi">Mostrati in verde i parcheggi già presenti nel DB intorno a questa posizione, nell\'arco di 500m.</string>
+
+    <!-- API KEY String -->
+    <string name="auth_error">API Key invalida, o permessi insufficenti.</string>
+    <string name="salva">Salva</string>
+    <string name="esci_app">Esci dall\'app</string>
+    <string name="annulla">Annulla</string>
+    <string name="invalid_api_key">API Key non valida!</string>
+    <string name="title_insert_api_key">Inserisci API Key</string>
 
 </resources>

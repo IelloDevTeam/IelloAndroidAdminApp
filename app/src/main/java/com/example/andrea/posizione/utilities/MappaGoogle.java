@@ -1,4 +1,4 @@
-package com.example.andrea.posizione.UI.utilities;
+package com.example.andrea.posizione.utilities;
 
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -8,9 +8,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 
 import com.example.andrea.posizione.R;
-import com.example.andrea.posizione.UI.MainActivity;
-import com.example.andrea.posizione.UI.parcheggiScaricati.ElencoParcheggi;
-import com.example.andrea.posizione.UI.parcheggiScaricati.Parcheggio;
+import com.example.andrea.posizione.UI.activities.MainActivity;
+import com.example.andrea.posizione.parcheggiScaricati.ElencoParcheggi;
+import com.example.andrea.posizione.parcheggiScaricati.Parcheggio;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -197,8 +197,15 @@ public class MappaGoogle implements OnMapReadyCallback,
                                     if(!isError)
                                     {
                                         mMainActivity.creaToast(R.string.posto_eliminato);
+                                        mMarkerListPresenti.remove(marker);
+                                        // TODO: Sistemare eliminazione su lista.
+                                        mMainActivity.modificaTxtMarkerPresenti(mMarkerListPresenti.size());
                                         marker.remove();
                                     }
+                                }
+                                @Override
+                                public void OnAuthError() {
+                                    mMainActivity.creaToast(R.string.auth_error);
                                 }
                             });
                         }
@@ -331,6 +338,10 @@ public class MappaGoogle implements OnMapReadyCallback,
                                             else
                                                 mMainActivity.creaToast(R.string.posizione_inviata);
                                         }
+                                        @Override
+                                        public void OnAuthError() {
+                                            mMainActivity.creaToast(R.string.auth_error);
+                                        }
                                     });
                                 } else {
                                     mMainActivity.creaToast(R.string.attivare_gps);
@@ -356,7 +367,14 @@ public class MappaGoogle implements OnMapReadyCallback,
                     @Override
                     public void OnResult(boolean isError, JSONObject jsonObject) {
                         if(!isError)
-                            m.remove();
+                        {
+                            mMarkerListPresenti.add(m);
+                        }
+                    }
+
+                    @Override
+                    public void OnAuthError() {
+
                     }
                 });
             }

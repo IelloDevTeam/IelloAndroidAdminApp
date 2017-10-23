@@ -1,4 +1,4 @@
-package com.example.andrea.posizione.UI.utilities;
+package com.example.andrea.posizione.utilities;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
