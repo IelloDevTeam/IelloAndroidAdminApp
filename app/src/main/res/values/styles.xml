@@ -8,10 +8,17 @@
     <style name="NoActionBarTheme" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <!-- Rendeva tutti i controlli con questi colori, esempio un normale edit text su sfondo
+             biano rendeva invisibile il focus sull'edit text -->
+        <!-- <item name="colorControlNormal">@color/white</item> -->
+        <!--<item name="colorControlActivated">@color/white</item> -->
+    </style>
+
+    <!-- Tema distinato alla barra di ricerca -->
+    <style name="AppBarAddressSearchTheme" parent="AppTheme.AppBarOverlay">
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">@color/white</item>
     </style>
-
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">

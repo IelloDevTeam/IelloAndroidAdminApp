@@ -189,25 +189,28 @@ public class MappaGoogle implements OnMapReadyCallback,
                     alertElimina.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-
-                            String parkId = (String) marker.getTag();
-                            mMainActivity.getAPIHandler().deleteLocation(parkId, new APIHandler.APICallback() {
-                                @Override
-                                public void OnResult(boolean isError, JSONObject jsonObject) {
-                                    if(!isError)
-                                    {
-                                        mMainActivity.creaToast(R.string.posto_eliminato);
-                                        mMarkerListPresenti.remove(marker);
-                                        // TODO: Sistemare eliminazione su lista.
-                                        mMainActivity.modificaTxtMarkerPresenti(mMarkerListPresenti.size());
-                                        marker.remove();
+                            // Recupero tramite Tag
+                            final Parcheggio parcheggio = (Parcheggio) marker.getTag();
+                            if(parcheggio != null)
+                            {
+                                mMainActivity.getAPIHandler().deleteLocation(parcheggio.getID(), new APIHandler.APICallback() {
+                                    @Override
+                                    public void OnResult(boolean isError, JSONObject jsonObject) {
+                                        if(!isError)
+                                        {
+                                            mMainActivity.creaToast(R.string.posto_eliminato);
+                                            mMarkerListPresenti.remove(marker);
+                                            ElencoParcheggi.getInstance().getListParcheggi().remove(parcheggio);
+                                            mMainActivity.modificaTxtMarkerPresenti(mMarkerListPresenti.size());
+                                            marker.remove();
+                                        }
                                     }
-                                }
-                                @Override
-                                public void OnAuthError() {
-                                    mMainActivity.creaToast(R.string.auth_error);
-                                }
-                            });
+                                    @Override
+                                    public void OnAuthError() {
+                                        mMainActivity.creaToast(R.string.auth_error);
+                                    }
+                                });
+                            }
                         }
                     });
                 alertElimina.setNegativeButton(R.string.no, null);
@@ -329,7 +332,6 @@ public class MappaGoogle implements OnMapReadyCallback,
                             public void onSuccess(Location location) {
                                 if (location != null) {
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                    // TODO: Modificare invio posizione
                                     mMainActivity.getAPIHandler().sendLocation(latLng, new APIHandler.APICallback() {
                                         @Override
                                         public void OnResult(boolean isError, JSONObject jsonObject) {
@@ -346,7 +348,6 @@ public class MappaGoogle implements OnMapReadyCallback,
                                 } else {
                                     mMainActivity.creaToast(R.string.attivare_gps);
                                 }
-
                             }
                         });
             } catch (SecurityException ex) {
@@ -359,6 +360,7 @@ public class MappaGoogle implements OnMapReadyCallback,
     /**
      * Metodo per gestire l'invio dei markers al DB
      */
+    // TODO: Sistemare metodo
     public void inviaPosizioneMarkers() {
         if(mMarkerListDaInviare.size() > 0) {
 
@@ -366,25 +368,27 @@ public class MappaGoogle implements OnMapReadyCallback,
                 mMainActivity.getAPIHandler().sendLocation(m.getPosition(), new APIHandler.APICallback() {
                     @Override
                     public void OnResult(boolean isError, JSONObject jsonObject) {
+                        System.out.println(isError);
+                        System.out.println(jsonObject);
                         if(!isError)
                         {
-                            mMarkerListPresenti.add(m);
+                            m.remove();
+                            // rimuovo dalla lista solo quelli che sono stati effetivamente caricati
+                            // invece di pulire tutta la lista
+                            mMarkerListDaInviare.remove(m);
+                            mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
                         }
                     }
-
                     @Override
                     public void OnAuthError() {
 
                     }
                 });
             }
-            mMarkerListDaInviare.clear();
 
             if(mMarkerProvvisorio != null)
                 mMarkerProvvisorio.remove();
             mMarkerProvvisorio = null;
-
-            mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
 
             mMainActivity.creaToast(R.string.posizione_markers_inviata);
             mMainActivity.modificaTxtMarkerInSospeso(false);
@@ -414,9 +418,9 @@ public class MappaGoogle implements OnMapReadyCallback,
                     .title(p.getIndirizzo())
                     .icon(BitmapDescriptorFactory.defaultMarker(138)));
 
-            // Associo al marker un tag che corrisponde all'id del parcheggio in questo modo posso
+            // Associo al marker un tag che corrisponde al parcheggio in questo modo posso
             // poi eliminarlo direttamente
-            marker.setTag(p.getID());
+            marker.setTag(p);
 
             mMarkerListPresenti.add(marker);
         }

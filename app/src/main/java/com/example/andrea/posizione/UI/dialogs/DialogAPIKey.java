@@ -3,6 +3,7 @@ package com.example.andrea.posizione.UI.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -50,10 +51,12 @@ public class DialogAPIKey extends AppCompatDialogFragment implements DialogInter
 
         LinearLayout rootView = new LinearLayout(getActivity());
         rootView.setOrientation(LinearLayout.VERTICAL);
-        rootView.setPadding(marginLeftRight, 0, marginLeftRight, 0);
+        rootView.setPadding(marginLeftRight, marginLeftRight, marginLeftRight, marginLeftRight);
         _inputLayout = new TextInputLayout(getActivity());
         _inputLayout.addView(new EditText(getActivity()));
+        _inputLayout.setHint(getString(R.string.api_key_title));
         _inputLayout.getEditText().setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        _inputLayout.getEditText().setHighlightColor(Color.YELLOW);
 
         rootView.addView(_inputLayout);
 
@@ -65,7 +68,7 @@ public class DialogAPIKey extends AppCompatDialogFragment implements DialogInter
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setTitle(getString(R.string.title_insert_api_key))
                 .setView(rootView)
-                .setCancelable(false)
+//                .setCancelable(false)
                 .setPositiveButton(getString(R.string.salva), null)
                 .setNegativeButton(SharedPrefsHelper.getInstance().isApiKeyRegistered(getActivity()) ? getString(R.string.annulla) : getString(R.string.esci_app), this)
                 .create();

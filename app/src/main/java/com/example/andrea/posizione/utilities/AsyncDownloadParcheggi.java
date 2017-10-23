@@ -101,7 +101,7 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
     }
 
 
-    // TODO: Spostare richiesta api su APIHandler, fare cache dei dati ottenuti con volley.
+    // TODO: Spostare richiesta parcheggi in API Handler
     /**
      * Il metodo interroga l'API con dati relativi alle coordinate e al raggio di ricerca, quindi
      * restituisce il risultato in modo sincrono.
@@ -111,7 +111,7 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
         ElencoParcheggi.getInstance().getListParcheggi().clear();
 
         // creazione URL
-        String url = "http://192.168.1.110:4000/iello/v1/parking" +
+        String url = "http://cloudpi.webhop.me:4000/iello/v1/parking" +
                 "?latitude="    + mCoordRicerca.latitude +
                 "&longitude="   + mCoordRicerca.longitude;
                 //"&radius=" + mRange;
@@ -122,11 +122,14 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
         if (response == null)
             return;
 
+
+        System.out.println(response.toString());
+
         // conversione dell'oggetto JSON in oggetto Java
         try {
             String status = response.getString("status");
 
-            if(status.equals("OK")) {
+            if(status.equals("Success")) {
                 JSONArray jArrayParcheggi = response.getJSONObject("message").getJSONArray("parking");
 
                 ElencoParcheggi.getInstance().getListParcheggi().clear();
