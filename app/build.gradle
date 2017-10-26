@@ -22,18 +22,23 @@ android {
     }
 }
 
+
+def SUPPORT = "26.1.0"
+def G_SERV = "11.4.2"
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:support-vector-drawable:26.1.0'
-    compile 'com.google.firebase:firebase-database:11.4.0'
-    compile 'com.google.android.gms:play-services-location:11.4.0'
-    compile 'com.google.firebase:firebase-auth:11.4.0'
-    compile 'com.google.android.gms:play-services-maps:11.4.0'
+    compile "com.android.support:appcompat-v7:$SUPPORT"
+    compile "com.android.support:design:$SUPPORT"
+    compile "com.android.support:support-vector-drawable:$SUPPORT"
+    compile "com.google.android.gms:play-services-location:$G_SERV"
+    compile "com.google.android.gms:play-services-maps:$G_SERV"
+    compile "com.google.firebase:firebase-core:$G_SERV"
+    compile "com.google.firebase:firebase-database:$G_SERV"
+    compile "com.google.firebase:firebase-auth:$G_SERV"
     compile 'io.github.yavski:fab-speed-dial:1.0.6'
     compile 'com.android.volley:volley:1.0.0'
     testCompile 'junit:junit:4.12'

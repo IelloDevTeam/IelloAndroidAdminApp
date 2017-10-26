@@ -19,12 +19,12 @@ public class ProgressBarHandler {
 
     // boolean che permettono di stabilire se le tre tipologie di processi background
     // (collegamento firebase, ricerca indirizzo, download parcheggi) sono attivi
-    private boolean mDownloadingPark, mConnectingDB, mSearchingByInd;
+    private boolean mDownloadingPark, mSearchingByInd;
 
     public ProgressBarHandler(MainActivity mainActivity) {
         mProgressBar = mainActivity.findViewById(R.id.clippedProgressBar);
 
-        mDownloadingPark = mConnectingDB = mSearchingByInd = false;
+        mDownloadingPark = mSearchingByInd = false;
     }
 
 
@@ -40,39 +40,25 @@ public class ProgressBarHandler {
     }
 
 
-
-    public void setDownloadingPark(boolean isRunning) {
+    void setDownloadingPark(boolean isRunning) {
         if (isRunning) {
             mDownloadingPark = true;
             showProgressBar();
         } else {
             mDownloadingPark = false;
-            if(!mConnectingDB && !mSearchingByInd)
+            if(!mSearchingByInd)
                 hideProgressBar();
         }
     }
 
 
-
-    public void setConnectingDB(boolean isRunning) {
-        if (isRunning) {
-            mConnectingDB = true;
-            showProgressBar();
-        } else {
-            mConnectingDB = false;
-            if(!mDownloadingPark && !mSearchingByInd)
-                hideProgressBar();
-        }
-    }
-
-
-    public void setSearchingInd(boolean isRunning) {
+    void setSearchingInd(boolean isRunning) {
         if (isRunning) {
             mSearchingByInd = true;
             showProgressBar();
         } else {
             mSearchingByInd = false;
-            if(!mConnectingDB && !mDownloadingPark)
+            if(!mDownloadingPark)
                 hideProgressBar();
         }
     }
