@@ -5,7 +5,7 @@ A differenza dell'[app Android Iello per gli utenti](https://github.com/IelloDev
 
 
 ## Integrazione con Iello Api ##
-L'applicazione utilizza le funzionalità offerte da [Iello API](https://bitbucket.org/piattaformeteam/iello-api "Iello API Repo") per inviare nuove posizioni,visualizzare quelle già presenti nel database e eliminare quelle indesiderate.
+L'applicazione utilizza le funzionalità offerte da [Iello API](https://github.com/IelloDevTeam/IelloAPI "Iello API Repo") per inviare nuove posizioni,visualizzare quelle già presenti nel database e eliminare quelle indesiderate.
 
 
 ## Funzionalità dell'applicazione ##
@@ -39,7 +39,7 @@ Ancora una volta, l'eliminazione avviene tramite una funzione dell'API: senza l'
 * In altro a destra dello schermo, è stata posta una icona che rimanda alle istruzioni di base per l'utilizzo dell'app;
 * Mentre si utilizza l'applicazione, viene disattivato il timeout dello schermo; tramite l'utilizzo dell'app ci si è infatti resi conto che tale funzione rende più agevole l'utilizzo dell'app nel concretp.
 
-### Licenza ###
+## Licenza ##
 MIT License
 
 Copyright (c) 2017 IelloDevTeam
@@ -62,5 +62,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-### Contatti & Credits ###
+## Contatti & Credits ##
 App realizzata come parte di un progetto di esame (PDGT) da [Riccardo Maldini](https://github.com/maldins46), [Andrea Petreti](https://github.com/petretiandrea), [Alessia Ventani](https://github.com/AlessiaVe) e [Elia Trufelli](https://github.com/EliaT95).
