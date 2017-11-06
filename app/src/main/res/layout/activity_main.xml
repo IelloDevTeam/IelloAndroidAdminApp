@@ -71,10 +71,10 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <FrameLayout
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:id="@+id/clippedProgressBar"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_gravity="center_vertical">
+            android:layout_height="4dp">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -84,7 +84,6 @@
                 <ProgressBar
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:indeterminateOnly="true"
                     android:layout_height="match_parent"
                     android:indeterminate="true" />
             </FrameLayout>
