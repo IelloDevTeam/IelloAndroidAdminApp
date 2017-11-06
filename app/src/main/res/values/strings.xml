@@ -1,23 +1,30 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Iello Admin</string>
     <string name="api_key_title">API Key</string>
     <string name="help_title">Aiuto</string>
-    <string name="help">Iello Admin è l\'applicazione Android che consente di popolare il
-        databese Firebase di Project Iello, dove vengono memorizzati i posteggi per disabili
-        utilizzati da Iello API e Iello App Android.\n\nQuest\'app è pensata per essere utilizzata
-        esclusivamente dagli sviluppatori o da eventuali addetti al popolamento del database.\n\nLa
-        mappa può essere spostata digitando un indirizzo qualunque sulla barra di ricerca, o
+    <string name="help" tools:ignore="Typos">Iello Admin è l\'applicazione Android che consente di popolare il
+        database Firebase di Project Iello, dove vengono memorizzati i posteggi per disabili
+        utilizzati da Iello API e Iello App Android.\n\n
+        Quest\'app è pensata per essere utilizzata
+        esclusivamente dagli sviluppatori o da eventuali addetti al popolamento del database.\n\n
+        La mappa può essere spostata digitando un indirizzo qualunque sulla barra di ricerca, o
         utilizzando il button in alto a destra sulla mappa, per centrare la posizione sulla
-        posizione corrente dell\'utente.\n\nIl Fab in basso a destra consente di inviare una posizione
+        posizione corrente dell\'utente.\n\n
+        Il Fab in basso a destra consente di inviare una posizione
         al database; in particolare, consente di inviare la propria posizione attuale, o una
-        posizione selezionata sulla mappa, a discrezione dell\'utilizzatore.\n\nPer poter centrare
-        la mappa sulla propria posizione, o inviare la propria posizione, è necessario attivare la
-        geolocalizzazione sul proprio dispositivo.\n\nPer poter inviare dati al database, è necessario
+        posizione selezionata sulla mappa, a discrezione dell\'utilizzatore.\n\n
+        Per poter centrare la mappa sulla propria posizione, o inviare la propria posizione, è
+        necessario attivare la geolocalizzazione sul proprio dispositivo.\n\n
+        Per poter inviare dati al database, è necessario
         disporre di una connessione internet, e attendere che l\'app stabilisca una connessione con
-        il database.\n\nPer comodità di utilizzo, l\'app mantiene lo schermo del dispositivo acceso
-        mentre la si utilizza.\n\nE\' preferibile inviare posizioni al database tramite marker
+        il database.\n\n
+        E\' preferibile inviare posizioni al database tramite marker
         piuttosto che tramite geolocalizzazione, in quanto quest\'ultima ha un alto grado di
-        imprecisione.
+        imprecisione.\n\n
+        E\' possibile inoltre eliminare dei posteggi, selezionando un determinato marker verde e
+        seguendo la procedura fornita.\n\n
+        Per comodità di utilizzo, l\'app mantiene lo schermo del dispositivo acceso
+        mentre la si utilizza.
     </string>
     <string name="hint_edit_indirizzo">Cerca un indirizzo&#8230;</string>
     <string name="elimina_markers">Elimina i marker da caricare dalla mappa</string>
@@ -45,9 +52,11 @@
     <string name="title_elimina">Elimina posizione dal database</string>
     <string name="desc_elimina">Vuoi davvero eliminare questa posizione dal database?</string>
     <string name="fantastico">Fantastico!</string>
-    <string name="invia_geolocalizzaz_desc">Sicuro di voler inviare al database la tua posizione ricavata tramite GPS? Ricorda che la geolocalizzazione da smartphone è molto imprecisa.</string>
+    <string name="invia_geolocalizzaz_desc">Sicuro di voler inviare al database la tua posizione
+        ricavata tramite GPS? Ricorda che la geolocalizzazione da smartphone è molto imprecisa.</string>
     <string name="si_invia">Si, invia</string>
-    <string name="desc_parcheggi">Mostrati in verde i parcheggi già presenti nel DB intorno a questa posizione, nell\'arco di 500m.</string>
+    <string name="desc_parcheggi">Mostrati in verde i parcheggi già presenti nel DB intorno a
+        questa posizione, nell\'arco di 500m.</string>
 
     <!-- API KEY String -->
     <string name="auth_error">API Key invalida, o permessi insufficenti.</string>
