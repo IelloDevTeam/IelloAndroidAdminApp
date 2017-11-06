@@ -23,7 +23,7 @@ L'applicazione utilizza le funzionalità offerte da [Iello API](https://github.c
 ## Funzionalità dell'applicazione ##
 
 ### Autenticazione ###
-Al primo avvio dell'app, viene mostrata una finestra Dialog, che richede all'utente la chiave dell'API (*API key*). Questa altro non è che **una password conosciuta solo dagli amministratori, che permette di modificare le entry del database tramite le funzioni di IelloAPI**. L'API fornisce infatti delle particolari funzioni che permettono di aggiungere o eliminare parcheggi dal database in modo sicuro. Eventuali utenti malintenzionati non possono modificare il database senza la conoscenza di tale password.
+Al primo avvio dell'app, viene mostrata una finestra Dialog, che richede all'utente la chiave dell'API (*API key*). Questa altro non è che **una password conosciuta solo dagli amministratori, che permette di modificare le entry del database tramite le funzioni di IelloAPI**. L'API fornisce infatti delle particolari funzioni che permettono di aggiungere o eliminare parcheggi dal database in modo sicuro. Eventuali utenti malintenzionati non possono modificare il database senza la conoscenza di tale password. </br></br>
 
 
 <img src="Screen/vis1.jpg" width="200px" align="right"/>
@@ -34,8 +34,10 @@ La schermata di base dell'applicazione mostra una mappa (di default impostata so
 
 I markers di colore verde vengono visualizzati anche in assenza dell'API key, essendo la funzione di ricerca dell'API open source. Quindi, gli utenti dell'applicazione possono spostare la mappa, inserendo un indirizzo o tramite il GPS del proprio smartphone, e visualizzare i parcheggi attorno a tali posizioni.
 
-È possibile inoltre effettuare un **refresh manuale per mostrare i parcheggi presenti**, che permette di mostrare i parcheggi attorno alla posizione centrale della mappa, premendo l'apposita voce del tasto FAB.
+È possibile inoltre effettuare un **refresh manuale per mostrare i parcheggi presenti**, che permette di mostrare i parcheggi attorno alla posizione centrale della mappa, premendo l'apposita voce del tasto FAB. </br></br>
 
+
+<img src="Screen/inv3.jpg" width="200px" align="left"/>
 
 ### Inserimento di una nuova posizione ###
 
@@ -43,17 +45,18 @@ La funzionalità principale dell'applicazione è l'inserimento di nuovi dati all
 
 È anche possibile inviare direttamente al database la propria posizione, individuata tramite il GPS del proprio smartphone; tale funzione è però molto imprecisa, e va evitato il suo utilizzo quando possibile.
 
-L'inserimento avviene tramite l'apposita funzione dell'API. Se non si dispone dell'API key, o nel caso in cui quella inserita fosse errata, viene mostrato un messaggio di errore dopo il tentativo di inserimento.
+L'inserimento avviene tramite l'apposita funzione dell'API. Se non si dispone dell'API key, o nel caso in cui quella inserita fosse errata, viene mostrato un messaggio di errore dopo il tentativo di inserimento. </br></br>
 
-<img src="Screen/inv1.jpg" width="200px"/> <img src="Screen/inv3.jpg" width="200px" /> <img src="Screen/geo1.jpg" width="200px" />
+
+
+<img src="Screen/eli3.jpg" width="200px" align="right"/>
 
 
 ### Eliminazione di una posizione presente ###
 Tramite l'applicazione è anche possibile eliminare dal database delle posizioni inserite precedentemente. Per far ciò, è sufficiente selezionare uno dei markers verdi presenti nella mappa. Verrà un'apposito Dialog per confermare l'eliminazione, quindi in caso di consenso, il marker viene eliminato. 
 
-Ancora una volta, l'eliminazione avviene tramite una funzione dell'API: senza l'API key corretta, non viene effettuata la modifica.
+Ancora una volta, l'eliminazione avviene tramite una funzione dell'API: senza l'API key corretta, non viene effettuata la modifica.  </br></br>
 
-<img src="Screen/eli1.jpg" width="200px"/> <img src="Screen/eli2.jpg" width="200px"/> <img src="Screen/eli3.jpg" width="200px"/>
 
 
 ### Altre funzioni ###
