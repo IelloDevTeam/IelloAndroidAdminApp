@@ -124,10 +124,7 @@ public class MainActivity extends AppCompatActivity implements DialogAPIKey.Dial
                     }
 
                     case R.id.action_parcheggi_presenti: {
-                        LatLng coordCorrenti = mMappa.getPosizioneAttualeMappa();
-                        AsyncDownloadParcheggi adp
-                                = new AsyncDownloadParcheggi(MainActivity.this, coordCorrenti);
-                        adp.execute();
+                        downloadParking();
                     }
                 }
                 return false;
@@ -197,6 +194,14 @@ public class MainActivity extends AppCompatActivity implements DialogAPIKey.Dial
         modificaTxtMarkerPresenti(0);
 
         showFab();
+    }
+
+    public void downloadParking()
+    {
+        LatLng coordCorrenti = mMappa.getPosizioneAttualeMappa();
+        AsyncDownloadParcheggi adp
+                = new AsyncDownloadParcheggi(MainActivity.this, coordCorrenti);
+        adp.execute();
     }
 
     private void startParkingDownload()
