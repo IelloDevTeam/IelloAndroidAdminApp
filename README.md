@@ -1,5 +1,5 @@
 # Iello Admin App #
-Questa repository contiene il codice dell'app Android per amministratori di Project Iello. L'applicazione è stata pensata per gestire il database remoto, inserendo e modificando i dati relativi ai posteggi per disabili, tramite [l'API da noi realizzata](https://github.com/IelloDevTeam/IelloAPI "Iello API Repo"). 
+Questa repository contiene il codice dell'app Android per amministratori di [Project Iello](https://prezi.com/p/bkqagzs4v_w5/). L'applicazione è stata pensata per gestire il database remoto, inserendo e modificando i dati relativi ai posteggi per disabili, tramite [l'API da noi realizzata](https://github.com/IelloDevTeam/IelloAPI "Iello API Repo"). 
 
 A differenza dell'[app Android Iello per gli utenti](https://github.com/IelloDevTeam/IelloAndroidApp), questa è stata pensata per essere utilizzata solo dagli sviluppatori o agli addetti alla ricerca dei posteggi, per garantire l'affidabilità dei dati. Per tali ragioni tale app nono verrà pubblicata nel Play Store.
 
