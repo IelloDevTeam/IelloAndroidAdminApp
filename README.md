@@ -17,7 +17,7 @@ A differenza dell'[app Android Iello per gli utenti](https://github.com/IelloDev
 
 
 ## Integrazione con IelloAPI ##
-L'applicazione utilizza le funzionalità offerte da [Iello API](https://github.com/IelloDevTeam/IelloAPI "Iello API Repo") per inviare nuove posizioni,visualizzare quelle già presenti nel database e eliminare quelle indesiderate.
+L'applicazione utilizza le funzionalità offerte da [Iello API](https://github.com/IelloDevTeam/IelloAPI "Iello API Repo") per inviare nuove posizioni, visualizzare quelle già presenti nel database e eliminare quelle indesiderate.
 
 
 ## Funzionalità dell'applicazione ##
@@ -30,9 +30,9 @@ Al primo avvio dell'app, viene mostrata una finestra Dialog, che richede all'ute
 
 
 ### Visualizzazione dei parcheggi già presenti ###
-La schermata di base dell'applicazione mostra una mappa (di default impostata sopra a Urbino) con dei **markers di colore verde**. Questi rappresentano la posizione dei parcheggi già presenti nel database, entro un raggio di 500 metri rispetto alla posizione centrale della mappa.
+La schermata di base dell'applicazione mostra una mappa (di default impostata sopra a Urbino) con dei **marker di colore verde**. Questi rappresentano la posizione dei parcheggi già presenti nel database, entro un raggio di 500 metri rispetto alla posizione centrale della mappa.
 
-I markers di colore verde vengono visualizzati anche in assenza dell'API key, essendo la funzione di ricerca dell'API open source. Quindi, gli utenti dell'applicazione possono spostare la mappa, inserendo un indirizzo o tramite il GPS del proprio smartphone, e visualizzare i parcheggi attorno a tali posizioni.
+I marker di colore verde vengono visualizzati anche in assenza dell'API key, essendo la funzione di ricerca dell'API open source. Quindi, gli utenti dell'applicazione possono spostare la mappa, inserendo un indirizzo o tramite il GPS del proprio smartphone, e visualizzare i parcheggi attorno a tali posizioni.
 
 È possibile inoltre effettuare un **refresh manuale per mostrare i parcheggi presenti**, che permette di mostrare i parcheggi attorno alla posizione centrale della mappa, premendo l'apposita voce del tasto FAB. </br></br>
 
@@ -41,9 +41,9 @@ I markers di colore verde vengono visualizzati anche in assenza dell'API key, es
 
 ### Inserimento di una nuova posizione ###
 
-La funzionalità principale dell'applicazione è l'inserimento di nuovi dati all'interno del database. Premendo un punto nella mappa, viene impostato un **marker "provvisorio" di colore rosso**. È necessario premere nuovamente il marker per inserirlo nella **coda di inserimento**. I marker nella coda, distinguibili in quanto di colore giallo, possono essere inseriti nel database, tramite l'apposita voce all'interno del tasto FAB. La coda di inserimento, in quanto tale, può contenere anche più markers contemporaneamente.
+La funzionalità principale dell'applicazione è l'inserimento di nuovi dati all'interno del database. Premendo un punto nella mappa, viene impostato un **marker "provvisorio" di colore rosso**. È necessario premere nuovamente il marker per inserirlo nella **coda di inserimento**. I marker nella coda, distinguibili in quanto di colore giallo, possono essere inseriti nel database, tramite l'apposita voce all'interno del tasto FAB. La coda di inserimento, in quanto tale, può contenere anche più marker contemporaneamente.
 
-È anche possibile inviare direttamente al database la propria posizione, individuata tramite il GPS del proprio smartphone; tale funzione è però molto imprecisa, e va evitato il suo utilizzo quando possibile.
+È anche possibile inviare direttamente al database la propria posizione, individuata tramite il GPS del proprio smartphone. Tale funzione è però molto imprecisa e va evitato il suo utilizzo quando possibile.
 
 L'inserimento avviene tramite l'apposita funzione dell'API. Se non si dispone dell'API key, o nel caso in cui quella inserita fosse errata, viene mostrato un messaggio di errore dopo il tentativo di inserimento. </br></br>
 
@@ -53,7 +53,7 @@ L'inserimento avviene tramite l'apposita funzione dell'API. Se non si dispone de
 
 
 ### Eliminazione di una posizione presente ###
-Tramite l'applicazione è anche possibile eliminare dal database delle posizioni inserite precedentemente. Per far ciò, è sufficiente selezionare uno dei markers verdi presenti nella mappa. Verrà un'apposito Dialog per confermare l'eliminazione, quindi in caso di consenso, il marker viene eliminato. 
+Tramite l'applicazione è anche possibile eliminare dal database delle posizioni inserite precedentemente. Per far ciò, è sufficiente selezionare uno dei marker verdi presenti nella mappa. Verrà aperto un apposito Dialog per confermare l'eliminazione, quindi in caso di consenso, il marker viene eliminato. 
 
 Ancora una volta, l'eliminazione avviene tramite una funzione dell'API: senza l'API key corretta, non viene effettuata la modifica.  </br></br>
 
