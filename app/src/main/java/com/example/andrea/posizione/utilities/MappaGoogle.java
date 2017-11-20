@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.example.andrea.posizione.R;
 import com.example.andrea.posizione.UI.activities.MainActivity;
@@ -195,7 +196,7 @@ public class MappaGoogle implements OnMapReadyCallback,
                             {
                                 mMainActivity.getAPIHandler().deleteLocation(parcheggio.getID(), new APIHandler.APICallback() {
                                     @Override
-                                    public void OnResult(boolean isError, JSONObject jsonObject) {
+                                    public void onResult(boolean isError, JSONObject jsonObject) {
                                         if(!isError)
                                         {
                                             mMainActivity.creaToast(R.string.posto_eliminato);
@@ -206,7 +207,7 @@ public class MappaGoogle implements OnMapReadyCallback,
                                         }
                                     }
                                     @Override
-                                    public void OnAuthError() {
+                                    public void onAuthError() {
                                         mMainActivity.creaToast(R.string.auth_error);
                                     }
                                 });
@@ -334,14 +335,14 @@ public class MappaGoogle implements OnMapReadyCallback,
                                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                     mMainActivity.getAPIHandler().sendLocation(latLng, new APIHandler.APICallback() {
                                         @Override
-                                        public void OnResult(boolean isError, JSONObject jsonObject) {
+                                        public void onResult(boolean isError, JSONObject jsonObject) {
                                             if(isError)
                                                 mMainActivity.creaToast(R.string.errore_invio_posizione);
                                             else
                                                 mMainActivity.creaToast(R.string.posizione_inviata);
                                         }
                                         @Override
-                                        public void OnAuthError() {
+                                        public void onAuthError() {
                                             mMainActivity.creaToast(R.string.auth_error);
                                         }
                                     });
@@ -360,16 +361,18 @@ public class MappaGoogle implements OnMapReadyCallback,
     /**
      * Metodo per gestire l'invio dei markers al DB
      */
-    // TODO: Sistemare metodo
     public void inviaPosizioneMarkers() {
         if(mMarkerListDaInviare.size() > 0) {
+
+            // Rimozione marker provvisorio
+            if(mMarkerProvvisorio != null)
+                mMarkerProvvisorio.remove();
+            mMarkerProvvisorio = null;
 
             for(final Marker m : mMarkerListDaInviare) {
                 mMainActivity.getAPIHandler().sendLocation(m.getPosition(), new APIHandler.APICallback() {
                     @Override
-                    public void OnResult(boolean isError, JSONObject jsonObject) {
-                        System.out.println(isError);
-                        System.out.println(jsonObject);
+                    public void onResult(boolean isError, JSONObject jsonObject) {
                         if(!isError)
                         {
                             m.remove();
@@ -377,22 +380,21 @@ public class MappaGoogle implements OnMapReadyCallback,
                             // invece di pulire tutta la lista
                             mMarkerListDaInviare.remove(m);
                             mMainActivity.modificaTxtMarkerDaCaricare(mMarkerListDaInviare.size());
+                            if(mMarkerListDaInviare.size() == 0)
+                            {
+                                mMainActivity.creaToast(R.string.posizione_markers_inviata);
+                                mMainActivity.modificaTxtMarkerInSospeso(false);
+                                // Al termine dell'upload ricarico la mappa
+                                mMainActivity.downloadParking();
+                            }
                         }
                     }
                     @Override
-                    public void OnAuthError() {
-
+                    public void onAuthError() {
+                        mMainActivity.creaToast(R.string.auth_error);
                     }
                 });
             }
-
-            if(mMarkerProvvisorio != null)
-                mMarkerProvvisorio.remove();
-            mMarkerProvvisorio = null;
-
-            mMainActivity.creaToast(R.string.posizione_markers_inviata);
-            mMainActivity.modificaTxtMarkerInSospeso(false);
-
         } else {
             mMainActivity.creaToast(R.string.markers_non_selezionati);
         }

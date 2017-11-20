@@ -101,7 +101,6 @@ public class AsyncDownloadParcheggi extends AsyncTask<Void, Void, String> {
     }
 
 
-    // TODO: Spostare richiesta parcheggi in API Handler
     /**
      * Il metodo interroga l'API con dati relativi alle coordinate e al raggio di ricerca, quindi
      * restituisce il risultato in modo sincrono.

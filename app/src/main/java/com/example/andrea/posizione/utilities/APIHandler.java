@@ -3,7 +3,6 @@ package com.example.andrea.posizione.utilities;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -27,7 +26,6 @@ import java.util.Map;
  * Handler per gestire le comunicazioni fondamentali con le API Iello
  */
 
-// TODO: Migliorare controllo errori di autenticazione + varie migliorie
 public class APIHandler extends ContextWrapper {
 
     private static final String TAG = "APIHandler";
@@ -35,8 +33,8 @@ public class APIHandler extends ContextWrapper {
 
     public interface APICallback
     {
-        void OnResult(boolean isError, JSONObject jsonObject);
-        void OnAuthError();
+        void onResult(boolean isError, JSONObject jsonObject);
+        void onAuthError();
     }
 
     public APIHandler(Context context) {
@@ -47,7 +45,6 @@ public class APIHandler extends ContextWrapper {
      * Metodo per l'invio di una singola posizione al DB remoto
      */
     void sendLocation(final LatLng location, @NonNull final APICallback apiCallback) {
-        // TODO: Terminare invio posizione
         if (location != null) {
             JSONObject body = new JSONObject();
             try {
@@ -60,9 +57,9 @@ public class APIHandler extends ContextWrapper {
                         try {
                             String status = response.getString("status");
                             if(status.equals("Success"))
-                                apiCallback.OnResult(false, response);
+                                apiCallback.onResult(false, response);
                             else
-                                apiCallback.OnResult(true, response);
+                                apiCallback.onResult(true, response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -71,10 +68,13 @@ public class APIHandler extends ContextWrapper {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && (networkResponse.statusCode == 500 || networkResponse.statusCode == 400)) {
+                        if (networkResponse != null && (networkResponse.statusCode == 500 ||
+                                networkResponse.statusCode == 400 ||
+                                networkResponse.statusCode == 401 ||
+                                networkResponse.statusCode == 403 )) {
                             // HTTP Status Code: 500 errore server di caricamento parcheggio
                             // 400 richesta malformata
-                            apiCallback.OnResult(true, null);
+                            apiCallback.onAuthError();
                         }
                         Log.d(TAG, error.toString());
                     }
@@ -107,16 +107,15 @@ public class APIHandler extends ContextWrapper {
         if(id != null && !id.isEmpty())
         {
             if(HelperRete.isNetworkAvailable(getApplicationContext())) {
-                // TODO: cancella posizione tramite API
                 JsonObjectRequest volleyRequest = new JsonObjectRequest(Request.Method.DELETE, BASE_URL + id, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             String status = response.getString("status");
                             if (status.equals("Success"))
-                                apiCallback.OnResult(false, response);
+                                apiCallback.onResult(false, response);
                             else
-                                apiCallback.OnResult(true, response);
+                                apiCallback.onResult(true, response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -128,7 +127,7 @@ public class APIHandler extends ContextWrapper {
                         if (networkResponse != null && (networkResponse.statusCode == 401 || networkResponse.statusCode == 403)) {
                             // HTTP Status Code: 401 Unauthorized, 403 Forbidden
                             System.out.println("aaaaa");
-                            apiCallback.OnAuthError();
+                            apiCallback.onAuthError();
                         }
                     }
                 }){
@@ -146,49 +145,4 @@ public class APIHandler extends ContextWrapper {
             }
         }
     }
-
-    // TODO: Terminare getLocation
-    /*JsonObjectRequest getLocation(LatLng currentLocation, int radius, final APICallback apiCallback)
-    {
-        if(HelperRete.isNetworkAvailable(getApplicationContext()))
-        {
-            try
-            {
-                String url = BASE_URL +
-                        "?latitude="    + currentLocation.latitude +
-                        "&longitude="   + currentLocation.longitude;
-
-                JsonObjectRequest volleyRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String status = response.getString("status");
-                            if(status.equals("OK"))
-                                apiCallback.OnResult(false, response);
-                            else
-                                apiCallback.OnResult(true, response);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, null){
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        return new HashMap<>();
-                    }
-                };
-
-                volleyRequest.getHeaders().put("Accept", "application/json");
-                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-                requestQueue.add(volleyRequest);
-
-                return volleyRequest;
-
-            } catch (AuthFailureError authFailureError) {
-                authFailureError.printStackTrace();
-            }
-        }
-
-        return null;
-    }*/
 }
