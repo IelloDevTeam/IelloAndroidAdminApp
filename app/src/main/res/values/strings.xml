@@ -1,10 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Iello Admin</string>
+    <string name="app_name">iello Admin</string>
     <string name="api_key_title">API Key</string>
     <string name="help_title">Aiuto</string>
     <string name="help" tools:ignore="Typos">Iello Admin è l\'applicazione Android che consente di popolare il
-        database Firebase di Project Iello, dove vengono memorizzati i posteggi per disabili
-        utilizzati da Iello API e Iello App Android.\n\n
+        database Firebase di Project iello, dove vengono memorizzati i posteggi per disabili
+        utilizzati da iello API e iello App Android.\n\n
         Quest\'app è pensata per essere utilizzata
         esclusivamente dagli sviluppatori o da eventuali addetti al popolamento del database.\n\n
         La mappa può essere spostata digitando un indirizzo qualunque sulla barra di ricerca, o
